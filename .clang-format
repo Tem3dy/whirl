@@ -1,0 +1,25 @@
+# Indent settings
+AccessModifierOffset: -4
+IndentWidth: 4
+IndentCaseLabels: true
+IndentAccessModifiers: false
+
+# Break settings
+BreakBeforeBraces: Allman
+
+# Wrapping settings
+ColumnLimit: 0
+
+# Namespace settings
+FixNamespaceComments: false
+NamespaceIndentation: All
+
+# Single line settings
+AllowShortFunctionsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortBlocksOnASingleLine: false
+
+# Misc
+PointerAlignment: Left
+SortIncludes: false
+AlwaysBreakTemplateDeclarations: true
