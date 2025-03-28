@@ -32,6 +32,8 @@ int GuiApplication::launch()
     if (glewInit() != GLEW_OK)
     {
         std::cerr << "ERROR: Failed to initialize GLEW" << std::endl;
+        glfwDestroyWindow(m_Window);
+        glfwTerminate();
         return 1;
     }
 
