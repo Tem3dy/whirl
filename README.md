@@ -1,2 +1,2 @@
-# whirl
+# whirl 🌀
 A C++ GUI library
