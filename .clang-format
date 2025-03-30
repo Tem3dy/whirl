@@ -23,3 +23,6 @@ AllowShortBlocksOnASingleLine: false
 PointerAlignment: Left
 SortIncludes: false
 AlwaysBreakTemplateDeclarations: true
+
+# Spacing settings
+SpaceAfterCStyleCast: true
