@@ -19,7 +19,7 @@ int GuiApplication::launch()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    m_Window = glfwCreateWindow(m_VideoMode.width, m_VideoMode.height, m_VideoMode.title.c_str(), 0, 0);
+    m_Window = glfwCreateWindow(m_VideoMode.Width, m_VideoMode.Height, m_VideoMode.Title.c_str(), 0, 0);
     if (!m_Window)
     {
         std::cerr << "Error: Failed to create a window" << std::endl;

@@ -6,9 +6,9 @@
 
 struct VideoMode
 {
-    int width;
-    int height;
-    std::string title;
+    int Width;
+    int Height;
+    std::string Title;
 };
 
 class GuiApplication
