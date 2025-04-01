@@ -17,7 +17,7 @@ public:
     GuiApplication(const VideoMode& mode);
 
 public:
-    int launch();
+    int Launch();
 
 private:
     VideoMode m_VideoMode;

@@ -7,7 +7,7 @@ GuiApplication::GuiApplication(const VideoMode& mode)
 {
 }
 
-int GuiApplication::launch()
+int GuiApplication::Launch()
 {
     if (!glfwInit())
     {
@@ -40,7 +40,7 @@ int GuiApplication::launch()
     while (!glfwWindowShouldClose(m_Window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        
+
         // App rendering and logic
 
         glfwSwapBuffers(m_Window);

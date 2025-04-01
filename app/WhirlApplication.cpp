@@ -10,5 +10,5 @@ int main()
         return 1;
     }
 
-    return app->launch();
+    return app->Launch();
 }
