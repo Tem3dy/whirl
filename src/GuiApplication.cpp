@@ -28,7 +28,6 @@ int GuiApplication::Launch()
     }
 
     glfwMakeContextCurrent(m_Window);
-    glfwSwapInterval(1);
     if (glewInit() != GLEW_OK)
     {
         std::cerr << "Error: Failed to initialize GLEW" << std::endl;
