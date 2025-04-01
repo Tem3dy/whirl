@@ -7,6 +7,11 @@ GuiApplication::GuiApplication(const VideoMode& mode)
 {
 }
 
+static void HandleResize(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
+
 int GuiApplication::Launch()
 {
     if (!glfwInit())
@@ -18,7 +23,7 @@ int GuiApplication::Launch()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+    
     m_Window = glfwCreateWindow(m_VideoMode.Width, m_VideoMode.Height, m_VideoMode.Title.c_str(), 0, 0);
     if (!m_Window)
     {
@@ -36,6 +41,8 @@ int GuiApplication::Launch()
         return 1;
     }
 
+    glfwSetFramebufferSizeCallback(m_Window, HandleResize);
+    glViewport(0, 0, m_VideoMode.Width, m_VideoMode.Height);
     while (!glfwWindowShouldClose(m_Window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
