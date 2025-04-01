@@ -19,6 +19,9 @@ add_library(${PROJECT_NAME} STATIC
     src/GuiApplication.cpp
 )
 
+# Compile with C++ 20
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
+
 # Add the include directory to the include path
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
