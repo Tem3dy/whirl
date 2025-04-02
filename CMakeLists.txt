@@ -17,6 +17,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_library(${PROJECT_NAME} STATIC
     src/Whirl.cpp
     src/GuiApplication.cpp
+
+    src/renderer/Shader.cpp
 )
 
 # Compile with C++ 20
