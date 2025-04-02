@@ -25,6 +25,9 @@ target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
 # Add the include directory to the include path
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
+# Add GLM to the include path
+target_include_directories(${PROJECT_NAME} PUBLIC lib/glm/include)
+
 # Link GLFW, GLEW and OpenGL
 target_link_libraries(${PROJECT_NAME} PUBLIC glfw GLEW GL)
 
