@@ -5,9 +5,13 @@
 class Shader
 {
 public:
+    Shader();
+    ~Shader();
+
+public:
     bool Load(const std::string& path);
     void Use();
 
 private:
-    unsigned int m_ProgramID = 0;
+    unsigned int m_ProgramID;
 };

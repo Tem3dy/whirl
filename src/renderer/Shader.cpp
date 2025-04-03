@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 
 #include "renderer/Shader.hpp"
+#include "Shader.hpp"
 
 static bool Compile(unsigned int shader, const char* source)
 {
@@ -180,4 +181,15 @@ void Shader::Use()
 
     // Use shader
     glUseProgram(m_ProgramID);
+}
+
+Shader::Shader()
+{
+    m_ProgramID = 0;
+}
+
+Shader::~Shader()
+{
+    if (m_ProgramID != 0)
+        glDeleteProgram(m_ProgramID);
 }
