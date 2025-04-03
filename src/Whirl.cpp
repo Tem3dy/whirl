@@ -1,5 +1,6 @@
-#include "Whirl.hpp"
 #include <iostream>
+
+#include "Whirl.hpp"
 
 std::optional<GuiApplication> Whirl::CreateApplication(int width, int height, const std::string& title)
 {

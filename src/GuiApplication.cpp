@@ -1,5 +1,7 @@
-#include "GuiApplication.hpp"
 #include <iostream>
+
+#include "GuiApplication.hpp"
+#include "renderer/Shader.hpp"
 
 GuiApplication::GuiApplication(const VideoMode& mode)
     : m_VideoMode(mode),

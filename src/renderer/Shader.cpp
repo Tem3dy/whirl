@@ -1,10 +1,10 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+
 #include <GL/glew.h>
 
 #include "renderer/Shader.hpp"
-#include "Shader.hpp"
 
 static bool Compile(unsigned int shader, const char* source)
 {

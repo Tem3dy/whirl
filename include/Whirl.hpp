@@ -1,7 +1,8 @@
 #pragma once
 
-#include "GuiApplication.hpp"
 #include <optional>
+
+#include "GuiApplication.hpp"
 
 namespace Whirl
 {
