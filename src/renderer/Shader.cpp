@@ -1,10 +1,13 @@
-#include "renderer/Shader.hpp"
-#include <GL/glew.h>
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <GL/glew.h>
+
+#include "renderer/Shader.hpp"
 
 static bool Compile(unsigned int shader, const char* source)
 {
+    std::cout << "Compiling shader..." << std::endl;
     glShaderSource(shader, 1, &source, nullptr);
     glCompileShader(shader);
 
@@ -14,10 +17,11 @@ static bool Compile(unsigned int shader, const char* source)
     {
         int size;
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &size);
-        char log[size];
-        glGetShaderInfoLog(shader, size, &size, log);
 
-        std::cerr << "Failed to compile shader: \n" << log << std::endl;
+        std::vector<char> log(size);
+        glGetShaderInfoLog(shader, size, nullptr, log.data());
+
+        std::cerr << "Failed to compile shader: \n" << log.data() << std::endl;
         return false;
     }
 
@@ -26,6 +30,7 @@ static bool Compile(unsigned int shader, const char* source)
 
 static bool Link(unsigned int program, unsigned int vShader, unsigned int fShader)
 {
+    std::cout << "Linking shaders..." << std::endl;
     glAttachShader(program, vShader);
     glAttachShader(program, fShader);
     glLinkProgram(program);
@@ -36,10 +41,11 @@ static bool Link(unsigned int program, unsigned int vShader, unsigned int fShade
     {
         int size;
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &size);
-        char log[size];
-        glGetProgramInfoLog(program, size, &size, log);
+        
+        std::vector<char> log(size);
+        glGetProgramInfoLog(program, size, nullptr, log.data());
 
-        std::cerr << "Failed to link shader program: \n" << log << std::endl;
+        std::cerr << "Failed to link shader program: \n" << log.data() << std::endl;
         return false;
     }
 
@@ -166,6 +172,12 @@ bool Shader::Load(const std::string& path)
 
 void Shader::Use()
 {
+    if (m_ProgramID == 0)
+    {
+        std::cerr << "Error: Attempted to use an invalid shader" << std::endl;
+        return;
+    }
+
     // Use shader
     glUseProgram(m_ProgramID);
 }
