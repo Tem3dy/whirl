@@ -7,4 +7,7 @@ class Shader
 public:
     bool Load(const std::string& path);
     void Use();
+
+private:
+    unsigned int m_ProgramID;
 };

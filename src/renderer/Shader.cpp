@@ -1,6 +1,53 @@
 #include "renderer/Shader.hpp"
+#include <GL/glew.h>
 #include <iostream>
 #include <fstream>
+
+static bool Compile(unsigned int shader, const char* source)
+{
+    glShaderSource(shader, 1, &source, nullptr);
+    glCompileShader(shader);
+
+    int result;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &result);
+    if (!result)
+    {
+        int size;
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &size);
+        char log[size];
+        glGetShaderInfoLog(shader, size, &size, log);
+
+        std::cerr << "Failed to compile shader: \n" << log << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+static bool Link(unsigned int program, unsigned int vShader, unsigned int fShader)
+{
+    glAttachShader(program, vShader);
+    glAttachShader(program, fShader);
+    glLinkProgram(program);
+    
+    int linkResult;
+    glGetProgramiv(program, GL_LINK_STATUS, &linkResult);
+    if (!linkResult)
+    {
+        int size;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &size);
+        char log[size];
+        glGetProgramInfoLog(program, size, &size, log);
+
+        std::cerr << "Failed to link shader program: \n" << log << std::endl;
+        return false;
+    }
+
+    glValidateProgram(program);
+    glDeleteShader(vShader);
+    glDeleteShader(fShader);
+    return true;
+}
 
 bool Shader::Load(const std::string& path)
 {
@@ -34,7 +81,7 @@ bool Shader::Load(const std::string& path)
         {
             if (readingFragment)
             {
-                std::cout << "Read fragment shader source, reading vertex shader source..." << std::endl;
+                std::cout << "Reading vertex shader source..." << std::endl;
                 readingFragment = false;
                 readingVertex = true;
                 continue;
@@ -56,7 +103,7 @@ bool Shader::Load(const std::string& path)
         {
             if (readingVertex)
             {
-                std::cout << "Read vertex shader source, reading fragment shader source..." << std::endl;
+                std::cout << "Reading fragment shader source..." << std::endl;
                 readingVertex = false;
                 readingFragment = true;
                 continue;
@@ -93,20 +140,32 @@ bool Shader::Load(const std::string& path)
 
     if (vShaderCode.empty() || fShaderCode.empty())
     {
-        std::cerr << "Missing vertex or fragment shader code in: " << path << std::endl;
+        std::cerr << "Missing shader code in: " << path << std::endl;
         return false;
     }
 
-    std::cout << "Vertex and fragment shaders loaded successfully from: " << path << std::endl;
-    std::cout << "Vertex shader (first 100 chars): \n" << vShaderCode.substr(0, 100) << std::endl;
-    std::cout << "Fragment shader (first 100 chars): \n" << fShaderCode.substr(0, 100) << std::endl;
+    std::cout << "Shader source loaded successfully from file: " << path << std::endl;
     shaderFile.close();
 
     // Pass shaders to OpenGL
+    m_ProgramID = glCreateProgram();
+    unsigned int vShader = glCreateShader(GL_VERTEX_SHADER);
+    unsigned int fShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+    if (!Compile(vShader, vShaderCode.c_str()))
+        return false;
+    if (!Compile(fShader, fShaderCode.c_str()))
+        return false;
+
+    if (!Link(m_ProgramID, vShader, fShader))
+        return false;
+    
+    std::cout << "Shader constructed successfully from file: " << path << std::endl;
     return true;
 }
 
 void Shader::Use()
 {
     // Use shader
+    glUseProgram(m_ProgramID);
 }
