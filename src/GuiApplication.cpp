@@ -23,7 +23,7 @@ int GuiApplication::Launch()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    
+
     m_Window = glfwCreateWindow(m_VideoMode.Width, m_VideoMode.Height, m_VideoMode.Title.c_str(), 0, 0);
     if (!m_Window)
     {
@@ -45,6 +45,7 @@ int GuiApplication::Launch()
     glViewport(0, 0, m_VideoMode.Width, m_VideoMode.Height);
     while (!glfwWindowShouldClose(m_Window))
     {
+        glClearColor(0.175f, 0.25f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // App rendering and logic
