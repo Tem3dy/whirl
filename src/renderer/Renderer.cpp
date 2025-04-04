@@ -7,6 +7,12 @@
 
 void Renderer::Open()
 {
+    if (m_Open)
+    {
+        std::cerr << "Attempted to open a renderer that's already open" << std::endl;
+        return;
+    }
+
     m_Open = true;
 
     // Initialize OpenGL resources
@@ -14,6 +20,12 @@ void Renderer::Open()
 
 void Renderer::Close()
 {
+    if (!m_Open)
+    {
+        std::cerr << "Attempted to close a renderer that's already closed" << std::endl;
+        return;
+    }
+
     m_Open = false;
 
     // Delete OpenGL resources
@@ -39,5 +51,11 @@ void Renderer::DrawQuad(float x, float y, float w, float h, const Color& color)
 
 void Renderer::Flush()
 {
+    if (!m_Open)
+    {
+        std::cerr << "Tried to flush a closed renderer" << std::endl;
+        return;
+    }
+
     // Render and flush
 }
