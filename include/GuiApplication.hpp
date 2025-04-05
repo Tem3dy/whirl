@@ -7,9 +7,9 @@
 
 struct VideoMode
 {
-    int Width;
-    int Height;
-    std::string Title;
+    int width;
+    int height;
+    std::string title;
 };
 
 class GuiApplication
@@ -21,6 +21,6 @@ public:
     int Launch();
 
 private:
-    VideoMode m_VideoMode;
-    GLFWwindow* m_Window;
+    VideoMode m_mode;
+    GLFWwindow* m_window;
 };

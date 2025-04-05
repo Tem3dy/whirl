@@ -155,7 +155,7 @@ bool Shader::Load(const std::string& path)
     shaderFile.close();
 
     // Pass shaders to OpenGL
-    m_ProgramID = glCreateProgram();
+    m_program = glCreateProgram();
     unsigned int vShader = glCreateShader(GL_VERTEX_SHADER);
     unsigned int fShader = glCreateShader(GL_FRAGMENT_SHADER);
 
@@ -164,7 +164,7 @@ bool Shader::Load(const std::string& path)
     if (!Compile(fShader, fShaderCode.c_str()))
         return false;
 
-    if (!Link(m_ProgramID, vShader, fShader))
+    if (!Link(m_program, vShader, fShader))
         return false;
     
     std::cout << "Shader constructed successfully from file: " << path << std::endl;
@@ -173,23 +173,23 @@ bool Shader::Load(const std::string& path)
 
 void Shader::Use()
 {
-    if (m_ProgramID == 0)
+    if (m_program == 0)
     {
         std::cerr << "Error: Attempted to use an invalid shader" << std::endl;
         return;
     }
 
     // Use shader
-    glUseProgram(m_ProgramID);
+    glUseProgram(m_program);
 }
 
 Shader::Shader()
 {
-    m_ProgramID = 0;
+    m_program = 0;
 }
 
 Shader::~Shader()
 {
-    if (m_ProgramID != 0)
-        glDeleteProgram(m_ProgramID);
+    if (m_program != 0)
+        glDeleteProgram(m_program);
 }

@@ -13,5 +13,5 @@ public:
     void Use();
 
 private:
-    unsigned int m_ProgramID;
+    unsigned int m_program;
 };

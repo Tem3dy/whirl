@@ -1,11 +1,10 @@
 #include <iostream>
 
 #include "GuiApplication.hpp"
-#include "renderer/Shader.hpp"
 
 GuiApplication::GuiApplication(const VideoMode& mode)
-    : m_VideoMode(mode),
-      m_Window(nullptr)
+    : m_mode(mode),
+      m_window(nullptr)
 {
 }
 
@@ -26,37 +25,37 @@ int GuiApplication::Launch()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    m_Window = glfwCreateWindow(m_VideoMode.Width, m_VideoMode.Height, m_VideoMode.Title.c_str(), 0, 0);
-    if (!m_Window)
+    m_window = glfwCreateWindow(m_mode.width, m_mode.height, m_mode.title.c_str(), 0, 0);
+    if (!m_window)
     {
         std::cerr << "Error: Failed to create a window" << std::endl;
         glfwTerminate();
         return 1;
     }
 
-    glfwMakeContextCurrent(m_Window);
+    glfwMakeContextCurrent(m_window);
     if (glewInit() != GLEW_OK)
     {
         std::cerr << "Error: Failed to initialize GLEW" << std::endl;
-        glfwDestroyWindow(m_Window);
+        glfwDestroyWindow(m_window);
         glfwTerminate();
         return 1;
     }
 
-    glfwSetFramebufferSizeCallback(m_Window, HandleResize);
-    glViewport(0, 0, m_VideoMode.Width, m_VideoMode.Height);
-    while (!glfwWindowShouldClose(m_Window))
+    glfwSetFramebufferSizeCallback(m_window, HandleResize);
+    glViewport(0, 0, m_mode.width, m_mode.height);
+    while (!glfwWindowShouldClose(m_window))
     {
         glClearColor(0.175f, 0.25f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // App rendering and logic
 
-        glfwSwapBuffers(m_Window);
+        glfwSwapBuffers(m_window);
         glfwPollEvents();
     }
 
-    glfwDestroyWindow(m_Window);
+    glfwDestroyWindow(m_window);
     glfwTerminate();
     return 0;
 }

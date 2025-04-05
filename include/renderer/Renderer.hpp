@@ -23,10 +23,10 @@ struct Color
         return (ri << 24) | (gi << 16) | (bi << 8) | ai;
     }
     
-    uint32_t Value;
+    uint32_t value;
 
     constexpr Color(float r, float g, float b) : Color(r, g, b, 1.0f) {}
-    constexpr Color(float r, float g, float b, float a) : Value(Encode(r, g, b, a)) {}
+    constexpr Color(float r, float g, float b, float a) : value(Encode(r, g, b, a)) {}
 
     static constexpr Color White()
     {
@@ -59,7 +59,7 @@ struct Quad
 {
     float x, y;
     float w, h;
-    Color FillColor;
+    Color color;
 };
 
 class Renderer
@@ -74,10 +74,10 @@ public:
     void Flush();
 
 private:
-    bool m_Open = false;
-    std::vector<Quad> m_QuadList;
+    bool m_isOpen = false;
+    std::vector<Quad> m_quadList;
 
-    unsigned int m_QuadVertexBuf;
-    unsigned int m_QuadIndexBuf;
-    unsigned int m_QuadArray;
+    unsigned int m_quadVertexBuf;
+    unsigned int m_quadIndexBuf;
+    unsigned int m_quadArray;
 };
