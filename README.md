@@ -10,6 +10,7 @@ Instructions on how to build whirl
 - CMake **3.30+**
 - C++ **20** compatible compiler (GCC, MSVC, clang)
 - GLFW3, GLEW and OpenGL installed on your system
+- clang-format (optional but recommended)
 
 ## Build process
 1. Clone the project:
