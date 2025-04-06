@@ -19,6 +19,7 @@ add_library(${PROJECT_NAME} STATIC
     src/GuiApplication.cpp
 
     src/renderer/Shader.cpp
+    src/renderer/Renderer.cpp
 )
 
 # Compile with C++ 20
