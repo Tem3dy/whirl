@@ -9,7 +9,7 @@ Instructions on how to build whirl
 - Git
 - CMake **3.30+**
 - C++ **20** compatible compiler (GCC, MSVC, clang)
-- GLFW3, GLEW and OpenGL installed on your system
+- OpenGL installed on your system
 - clang-format (optional but recommended)
 
 ## Build process
@@ -20,7 +20,7 @@ git clone https://github.com/Tem3dy/whirl.git
 
 2. Generate build files for your preferred build system (`Makefile`, `Ninja`, `Solution`), for example:
 ```bash
-cmake . -B build -G "Ninja" 
+cmake -B build -G "Ninja" 
 ```
 
 3. Build the project:

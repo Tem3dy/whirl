@@ -1,5 +1,6 @@
-#include "Whirl.hpp"
 #include <iostream>
+
+#include "Whirl.hpp"
 
 int main()
 {

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <GL/glew.h>
+#include <glad/gl.h>
 
 #include "renderer/Renderer.hpp"
 #include "renderer/Shader.hpp"

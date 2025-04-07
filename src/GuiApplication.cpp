@@ -34,13 +34,16 @@ int GuiApplication::Launch()
     }
 
     glfwMakeContextCurrent(m_window);
-    if (glewInit() != GLEW_OK)
+    if (!gladLoadGL(glfwGetProcAddress))
     {
-        std::cerr << "Error: Failed to initialize GLEW" << std::endl;
+        std::cerr << "Error: Failed to initialize GLAD" << std::endl;
         glfwDestroyWindow(m_window);
         glfwTerminate();
         return 1;
     }
+
+    std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
+    std::cout << "GLFW Version: " << glfwGetVersionString() << std::endl;
 
     glfwSetFramebufferSizeCallback(m_window, HandleResize);
     glViewport(0, 0, m_mode.width, m_mode.height);
