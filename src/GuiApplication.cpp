@@ -13,8 +13,14 @@ static void HandleResize(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+static void HandleError(int error, const char* message)
+{
+    std::cerr << "Error: " << message << std::endl;
+}
+
 int GuiApplication::Launch()
 {
+    glfwSetErrorCallback(HandleError);
     if (!glfwInit())
     {
         std::cerr << "Error: Failed to initialize GLFW" << std::endl;
@@ -24,7 +30,7 @@ int GuiApplication::Launch()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
+    
     m_window = glfwCreateWindow(m_mode.width, m_mode.height, m_mode.title.c_str(), 0, 0);
     if (!m_window)
     {
@@ -33,6 +39,7 @@ int GuiApplication::Launch()
         return 1;
     }
 
+    glfwSetWindowSizeLimits(m_window, m_mode.width, m_mode.height, GLFW_DONT_CARE, GLFW_DONT_CARE);
     glfwMakeContextCurrent(m_window);
     if (!gladLoadGL(glfwGetProcAddress))
     {
