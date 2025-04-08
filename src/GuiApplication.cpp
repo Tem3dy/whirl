@@ -39,7 +39,7 @@ int GuiApplication::Launch()
         return 1;
     }
 
-    glfwSetWindowSizeLimits(m_window, m_mode.width, m_mode.height, GLFW_DONT_CARE, GLFW_DONT_CARE);
+    glfwSetWindowSizeLimits(m_window, 200, 100, GLFW_DONT_CARE, GLFW_DONT_CARE);
     glfwMakeContextCurrent(m_window);
     if (!gladLoadGL(glfwGetProcAddress))
     {
