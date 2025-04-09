@@ -5,12 +5,7 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
-struct VideoMode
-{
-    int width;
-    int height;
-    std::string title;
-};
+#include "VideoMode.hpp"
 
 class GuiApplication
 {
