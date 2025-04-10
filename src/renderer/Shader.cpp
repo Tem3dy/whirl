@@ -194,50 +194,54 @@ Shader::~Shader()
         glDeleteProgram(m_program);
 }
 
-void Shader::SetBool(const std::string& name, bool value) const
+bool Shader::SetBool(const std::string& name, bool value) const
 {
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
     {
         std::cout << "Tried uploading a uniform bool to an unknown variable: " << name << std::endl;
-        return;
+        return false;
     }
 
     glUniform1i(location, value);
+    return true;
 }
 
-void Shader::SetInt(const std::string& name, int value) const
+bool Shader::SetInt(const std::string& name, int value) const
 {
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
     {
         std::cout << "Tried uploading a uniform int to an unknown variable: " << name << std::endl;
-        return;
+        return false;
     }
 
     glUniform1i(location, value);
+    return true;
 }
 
-void Shader::SetUInt(const std::string& name, unsigned int value) const
+bool Shader::SetUInt(const std::string& name, unsigned int value) const
 {
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
     {
         std::cout << "Tried uploading a uniform uint to an unknown variable: " << name << std::endl;
-        return;
+        return false;
     }
 
     glUniform1ui(location, value);
+    return true;
 }
 
-void Shader::SetFloat(const std::string& name, float value) const
+bool Shader::SetFloat(const std::string& name, float value) const
 {
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
     {
         std::cout << "Tried uploading a uniform float to an unknown variable: " << name << std::endl;
-        return;
+        return false;
     }
 
     glUniform1f(location, value);
+    return true;
 }
