@@ -43,7 +43,7 @@ bool Renderer::Flush()
     return true;
 }
 
-void Renderer::DrawQuad(float x, float y, float w, float h, uint32_t color = Color::White())
+void Renderer::DrawQuad(float x, float y, float w, float h, uint32_t color)
 {
     if (!m_isOpen)
     {
