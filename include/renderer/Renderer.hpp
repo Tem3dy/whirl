@@ -16,11 +16,11 @@ struct Quad
 class Renderer
 {
 public:
-    void Open();
-    void Close();
+    bool Open();
+    bool Close();
+    bool Flush();
 
     void DrawQuad(float x, float y, float w, float h, uint32_t color = Color::White());
-    void Flush();
 
 private:
     bool m_isOpen = false;
