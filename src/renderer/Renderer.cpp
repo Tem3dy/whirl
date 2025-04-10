@@ -31,16 +31,7 @@ void Renderer::Close()
     // Delete OpenGL resources
 }
 
-void Renderer::DrawQuad(float x, float y, float w, float h)
-{
-    if (!m_isOpen)
-    {
-        std::cerr << "ERROR: Tried to draw with a closed renderer" << std::endl;
-        return;
-    }
-}
-
-void Renderer::DrawQuad(float x, float y, float w, float h, const Color& color)
+void Renderer::DrawQuad(float x, float y, float w, float h, uint32_t color = Color::White())
 {
     if (!m_isOpen)
     {
