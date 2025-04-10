@@ -57,7 +57,7 @@ int GuiApplication::Launch()
     glViewport(0, 0, m_mode.width, m_mode.height);
     while (!glfwWindowShouldClose(m_window))
     {
-        glClearColor(0.175f, 0.25f, 0.3f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // App rendering and logic
