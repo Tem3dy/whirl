@@ -15,7 +15,7 @@ static void HandleResize(GLFWwindow* window, int width, int height)
 
 static void HandleError(int error, const char* message)
 {
-    std::cerr << "Error: " << message << std::endl;
+    std::cerr << "ERROR: " << message << std::endl;
 }
 
 int GuiApplication::Launch()
@@ -23,34 +23,35 @@ int GuiApplication::Launch()
     glfwSetErrorCallback(HandleError);
     if (!glfwInit())
     {
-        std::cerr << "Error: Failed to initialize GLFW" << std::endl;
+        std::cerr << "ERROR: Failed to initialize GLFW" << std::endl;
         return 1;
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    
+
     m_window = glfwCreateWindow(m_mode.width, m_mode.height, m_mode.title.c_str(), 0, 0);
     if (!m_window)
     {
-        std::cerr << "Error: Failed to create a window" << std::endl;
+        std::cerr << "ERROR: Failed to create a window" << std::endl;
         glfwTerminate();
         return 1;
     }
 
+    // TODO: Make this adjustable in the future
     glfwSetWindowSizeLimits(m_window, 200, 100, GLFW_DONT_CARE, GLFW_DONT_CARE);
     glfwMakeContextCurrent(m_window);
     if (!gladLoadGL(glfwGetProcAddress))
     {
-        std::cerr << "Error: Failed to initialize GLAD" << std::endl;
+        std::cerr << "ERROR: Failed to initialize GLAD" << std::endl;
         glfwDestroyWindow(m_window);
         glfwTerminate();
         return 1;
     }
 
-    std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
-    std::cout << "GLFW Version: " << glfwGetVersionString() << std::endl;
+    std::cout << "INFO: OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
+    std::cout << "INFO: GLFW Version: " << glfwGetVersionString() << std::endl;
 
     glfwSetFramebufferSizeCallback(m_window, HandleResize);
     glViewport(0, 0, m_mode.width, m_mode.height);

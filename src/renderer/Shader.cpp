@@ -8,7 +8,7 @@
 
 static bool Compile(unsigned int shader, const char* source)
 {
-    std::cout << "Compiling shader..." << std::endl;
+    std::cout << "INFO: Compiling shader..." << std::endl;
     glShaderSource(shader, 1, &source, nullptr);
     glCompileShader(shader);
 
@@ -22,7 +22,7 @@ static bool Compile(unsigned int shader, const char* source)
         std::vector<char> log(size);
         glGetShaderInfoLog(shader, size, nullptr, log.data());
 
-        std::cerr << "Failed to compile shader: \n" << log.data() << std::endl;
+        std::cerr << "ERROR: Failed to compile shader: \n" << log.data() << std::endl;
         return false;
     }
 
@@ -31,7 +31,7 @@ static bool Compile(unsigned int shader, const char* source)
 
 static bool Link(unsigned int program, unsigned int vShader, unsigned int fShader)
 {
-    std::cout << "Linking shaders..." << std::endl;
+    std::cout << "INFO: Linking shaders..." << std::endl;
     glAttachShader(program, vShader);
     glAttachShader(program, fShader);
     glLinkProgram(program);
@@ -46,7 +46,7 @@ static bool Link(unsigned int program, unsigned int vShader, unsigned int fShade
         std::vector<char> log(size);
         glGetProgramInfoLog(program, size, nullptr, log.data());
 
-        std::cerr << "Failed to link shader program: \n" << log.data() << std::endl;
+        std::cerr << "ERROR: Failed to link shader program: \n" << log.data() << std::endl;
         return false;
     }
 
@@ -58,11 +58,11 @@ static bool Link(unsigned int program, unsigned int vShader, unsigned int fShade
 
 bool Shader::Load(const std::string& path)
 {
-    std::cout << "Reading shader file: " << path << std::endl;
+    std::cout << "INFO: Reading shader file: " << path << std::endl;
     std::ifstream shaderFile(path);
     if (!shaderFile)
     {
-        std::cerr << "Failed to open a shader: " << path << std::endl;
+        std::cerr << "ERROR: Failed to open a shader file: " << path << std::endl;
         return false;
     }
 
@@ -78,7 +78,7 @@ bool Shader::Load(const std::string& path)
         {
             if (line.find("vertex") == std::string::npos && line.find("fragment") == std::string::npos)
             {
-                std::cerr << "Unknown shader tag found in: " << path << std::endl;
+                std::cerr << "ERROR: Unknown shader tag found in: " << path << std::endl;
                 std::cerr << "-> " << line << " <-" << std::endl;
                 return false;
             }
@@ -88,7 +88,7 @@ bool Shader::Load(const std::string& path)
         {
             if (readingFragment)
             {
-                std::cout << "Reading vertex shader source..." << std::endl;
+                std::cout << "INFO: Reading vertex shader source..." << std::endl;
                 readingFragment = false;
                 readingVertex = true;
                 continue;
@@ -96,12 +96,12 @@ bool Shader::Load(const std::string& path)
 
             if (readingVertex)
             {
-                std::cerr << "Unexpected shader tag found in: " << path << std::endl;
+                std::cerr << "ERROR: Unexpected shader tag found in: " << path << std::endl;
                 std::cerr << "-> " << line << " <- " << std::endl;
                 return false;
             }
 
-            std::cout << "Reading vertex shader source..." << std::endl;
+            std::cout << "INFO: Reading vertex shader source..." << std::endl;
             readingVertex = true;
             continue;
         }
@@ -110,7 +110,7 @@ bool Shader::Load(const std::string& path)
         {
             if (readingVertex)
             {
-                std::cout << "Reading fragment shader source..." << std::endl;
+                std::cout << "INFO: Reading fragment shader source..." << std::endl;
                 readingVertex = false;
                 readingFragment = true;
                 continue;
@@ -118,12 +118,12 @@ bool Shader::Load(const std::string& path)
 
             if (readingFragment)
             {
-                std::cerr << "Unexpected shader tag found in: " << path << std::endl;
+                std::cerr << "ERROR: Unexpected shader tag found in: " << path << std::endl;
                 std::cerr << "-> " << line << " <- " << std::endl;
                 return false;
             }
 
-            std::cout << "Reading fragment shader source..." << std::endl;
+            std::cout << "INFO: Reading fragment shader source..." << std::endl;
             readingFragment = true;
             continue;
         }
@@ -147,11 +147,11 @@ bool Shader::Load(const std::string& path)
 
     if (vShaderCode.empty() || fShaderCode.empty())
     {
-        std::cerr << "Missing shader code in: " << path << std::endl;
+        std::cerr << "ERROR: Missing shader code in: " << path << std::endl;
         return false;
     }
 
-    std::cout << "Shader source loaded successfully from file: " << path << std::endl;
+    std::cout << "INFO: Shader source loaded successfully from file: " << path << std::endl;
     shaderFile.close();
 
     // Pass shaders to OpenGL
@@ -167,7 +167,7 @@ bool Shader::Load(const std::string& path)
     if (!Link(m_program, vShader, fShader))
         return false;
     
-    std::cout << "Shader constructed successfully from file: " << path << std::endl;
+    std::cout << "INFO: Shader constructed successfully from file: " << path << std::endl;
     return true;
 }
 
@@ -175,7 +175,7 @@ void Shader::Use()
 {
     if (m_program == 0)
     {
-        std::cerr << "Error: Attempted to use an invalid shader" << std::endl;
+        std::cerr << "ERROR: Tried to use an invalid shader" << std::endl;
         return;
     }
 
@@ -199,7 +199,7 @@ bool Shader::SetBool(const std::string& name, bool value) const
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
     {
-        std::cout << "Tried uploading a uniform bool to an unknown variable: " << name << std::endl;
+        std::cerr << "ERROR: Tried uploading a uniform bool to an unknown variable: " << name << std::endl;
         return false;
     }
 
@@ -212,7 +212,7 @@ bool Shader::SetInt(const std::string& name, int value) const
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
     {
-        std::cout << "Tried uploading a uniform int to an unknown variable: " << name << std::endl;
+        std::cerr << "ERROR: Tried uploading a uniform int to an unknown variable: " << name << std::endl;
         return false;
     }
 
@@ -225,7 +225,7 @@ bool Shader::SetUInt(const std::string& name, unsigned int value) const
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
     {
-        std::cout << "Tried uploading a uniform uint to an unknown variable: " << name << std::endl;
+        std::cerr << "ERROR: Tried uploading a uniform uint to an unknown variable: " << name << std::endl;
         return false;
     }
 
@@ -238,7 +238,7 @@ bool Shader::SetFloat(const std::string& name, float value) const
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
     {
-        std::cout << "Tried uploading a uniform float to an unknown variable: " << name << std::endl;
+        std::cerr << "ERROR: Tried uploading a uniform float to an unknown variable: " << name << std::endl;
         return false;
     }
 
