@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 
 #include "VideoMode.hpp"
+#include "renderer/Renderer.hpp"
 
 class GuiApplication
 {
@@ -17,5 +18,6 @@ public:
 
 private:
     VideoMode m_mode;
+    Renderer m_renderer;
     GLFWwindow* m_window;
 };

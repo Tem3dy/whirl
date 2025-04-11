@@ -55,19 +55,42 @@ int GuiApplication::Launch()
     glViewport(0, 0, m_mode.width, m_mode.height);
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) {
         glViewport(0, 0, width, height);
+
+        // TODO: Figure this out better at some point
+        auto app = static_cast<GuiApplication*>(glfwGetWindowUserPointer(window));
+        if (app) 
+        {
+            app->m_mode.width = width;
+            app->m_mode.height = height;
+            app->m_renderer.Adjust(width, height);   
+        }
     });
 
+    m_renderer.Open();
+    m_renderer.Adjust(m_mode.width, m_mode.height);
     while (!glfwWindowShouldClose(m_window))
     {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
         // App rendering and logic
 
+        // Red square - top-left
+        m_renderer.DrawQuad(0, 0, 50, 50, Color::Red());
+        // Green square - top-right
+        m_renderer.DrawQuad(1230, 0, 50, 50, Color::Green());
+        // Blue square - bottom-left
+        m_renderer.DrawQuad(0, 670, 50, 50, Color::Blue());
+        // Yellow square - bottom-right
+        m_renderer.DrawQuad(1230, 670, 50, 50, Color::Yellow());
+        // White square - centered
+        m_renderer.DrawQuad(615, 335, 50, 50, Color::White());
+
+        m_renderer.Flush();
         glfwSwapBuffers(m_window);
         glfwPollEvents();
     }
 
+    m_renderer.Close();
     glfwDestroyWindow(m_window);
     glfwTerminate();
     return 0;
