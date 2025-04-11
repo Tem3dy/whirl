@@ -120,7 +120,7 @@ void Renderer::DrawQuad(float x, float y, float w, float h, uint32_t color)
 {
     if (!m_isOpen)
     {
-        std::cerr << "ERROR: Tried to draw with a closed renderer" << std::endl;
+        std::cerr << "ERROR: Tried to draw a quad with a closed renderer" << std::endl;
         return;
     }
 
@@ -150,6 +150,16 @@ void Renderer::DrawQuad(float x, float y, float w, float h, uint32_t color)
     m_quadList.emplace_back(x, y, w, h, color);
 }
 
+void Renderer::DrawVLine(float x, float y, float length, float thickness, uint32_t color)
+{
+    DrawQuad(x, y, thickness, length, color);
+}
+
+void Renderer::DrawHLine(float x, float y, float length, float thickness, uint32_t color)
+{
+    DrawQuad(x, y, length, thickness, color);
+}
+
 void Renderer::Adjust(int width, int height)
 {
     if (width <= 0 || height <= 0)
@@ -158,6 +168,7 @@ void Renderer::Adjust(int width, int height)
     }
 
     std::cout << "INFO: Adjusting renderer: (" << width << ", " << height << ")" << std::endl;
+    // clang-format off
     m_projection = glm::ortho(
         0.0f,
         static_cast<float>(width),
@@ -166,4 +177,5 @@ void Renderer::Adjust(int width, int height)
        -1.0f,
         1.0f
     );
+    // clang-format on
 }

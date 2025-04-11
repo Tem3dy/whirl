@@ -10,9 +10,8 @@ GuiApplication::GuiApplication(const VideoMode& mode)
 
 int GuiApplication::Launch()
 {
-    glfwSetErrorCallback([](int error, const char* description) {
-        std::cerr << "GLFW Error: " << error << ": " << description << std::endl;
-    });
+    glfwSetErrorCallback([](int error, const char* description)
+                         { std::cerr << "GLFW Error: " << error << ": " << description << std::endl; });
 
     if (!glfwInit())
     {
@@ -53,7 +52,8 @@ int GuiApplication::Launch()
 
     // Set up viewport
     glViewport(0, 0, m_mode.width, m_mode.height);
-    glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) {
+    glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height)
+                                   {
         glViewport(0, 0, width, height);
 
         // TODO: Figure this out better at some point
@@ -63,8 +63,7 @@ int GuiApplication::Launch()
             app->m_mode.width = width;
             app->m_mode.height = height;
             app->m_renderer.Adjust(width, height);   
-        }
-    });
+        } });
 
     m_renderer.Open();
     m_renderer.Adjust(m_mode.width, m_mode.height);
@@ -74,16 +73,16 @@ int GuiApplication::Launch()
         glClear(GL_COLOR_BUFFER_BIT);
         // App rendering and logic
 
-        // Red square - top-left
         m_renderer.DrawQuad(0, 0, 50, 50, Color::Red());
-        // Green square - top-right
         m_renderer.DrawQuad(1230, 0, 50, 50, Color::Green());
-        // Blue square - bottom-left
         m_renderer.DrawQuad(0, 670, 50, 50, Color::Blue());
-        // Yellow square - bottom-right
         m_renderer.DrawQuad(1230, 670, 50, 50, Color::Yellow());
-        // White square - centered
         m_renderer.DrawQuad(615, 335, 50, 50, Color::White());
+
+        m_renderer.DrawVLine(100, 50, 200, 10, Color::Red());
+        m_renderer.DrawHLine(200, 100, 300, 15, Color::Green());
+        m_renderer.DrawVLine(400, 150, 100, 5, Color::Blue());
+        m_renderer.DrawHLine(50, 200, 500, 20, Color::Yellow());
 
         m_renderer.Flush();
         glfwSwapBuffers(m_window);
