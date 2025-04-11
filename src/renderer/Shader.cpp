@@ -245,3 +245,16 @@ bool Shader::SetFloat(const std::string& name, float value) const
     glUniform1f(location, value);
     return true;
 }
+
+bool Shader::SetMat4(const std::string& name, const glm::mat4& matrix) const
+{
+    int location = glGetUniformLocation(m_program, name.c_str());
+    if (location == -1)
+    {
+        std::cerr << "ERROR: Tried uploading a uniform mat4 to an unknown variable: " << name << std::endl;
+        return false;
+    }
+
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+    return true;
+}
