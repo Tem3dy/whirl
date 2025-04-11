@@ -8,19 +8,12 @@ GuiApplication::GuiApplication(const VideoMode& mode)
 {
 }
 
-static void HandleResize(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
-
-static void HandleError(int error, const char* message)
-{
-    std::cerr << "ERROR: " << message << std::endl;
-}
-
 int GuiApplication::Launch()
 {
-    glfwSetErrorCallback(HandleError);
+    glfwSetErrorCallback([](int error, const char* description) {
+        std::cerr << "GLFW Error: " << error << ": " << description << std::endl;
+    });
+
     if (!glfwInit())
     {
         std::cerr << "ERROR: Failed to initialize GLFW" << std::endl;
@@ -42,6 +35,8 @@ int GuiApplication::Launch()
     // TODO: Make this adjustable in the future
     glfwSetWindowSizeLimits(m_window, 200, 100, GLFW_DONT_CARE, GLFW_DONT_CARE);
     glfwMakeContextCurrent(m_window);
+
+    // Load GLAD
     if (!gladLoadGL(glfwGetProcAddress))
     {
         std::cerr << "ERROR: Failed to initialize GLAD" << std::endl;
@@ -53,8 +48,15 @@ int GuiApplication::Launch()
     std::cout << "INFO: OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     std::cout << "INFO: GLFW Version: " << glfwGetVersionString() << std::endl;
 
-    glfwSetFramebufferSizeCallback(m_window, HandleResize);
+    // Set up window user pointer
+    glfwSetWindowUserPointer(m_window, this);
+
+    // Set up viewport
     glViewport(0, 0, m_mode.width, m_mode.height);
+    glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) {
+        glViewport(0, 0, width, height);
+    });
+
     while (!glfwWindowShouldClose(m_window))
     {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
