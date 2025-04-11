@@ -1,4 +1,5 @@
 #include <iostream>
+#include <format>
 
 #include <glad/gl.h>
 
@@ -127,16 +128,14 @@ void Renderer::DrawQuad(float x, float y, float w, float h, uint32_t color)
     if (x < 0 || y < 0)
     {
         // This needs a logger badly
-        std::cerr << "ERROR: Invalid quad coordinates ("
-                  << x << ", " << y << ")" << std::endl;
+        std::cerr << std::format("ERROR: Invalid quad coordinates ({}, {})", x, y) << std::endl;
         return;
     }
 
     if (w <= 0 || h <= 0)
     {
         // Same here
-        std::cerr << "ERROR: Invalid quad dimensions ("
-                  << w << ", " << h << ")" << std::endl;
+        std::cerr << std::format("ERROR: Invalid quad dimensions ({}, {})", w, h) << std::endl;
         return;
     }
 
@@ -162,12 +161,14 @@ void Renderer::DrawHLine(float x, float y, float length, float thickness, uint32
 
 void Renderer::Adjust(int width, int height)
 {
+    // Shouldn't happen, but just in case
     if (width <= 0 || height <= 0)
     {
-        std::cerr << "ERROR: Invalid viewport data (" << width << ", " << height << ")" << std::endl;
+        std::cerr << std::format("ERROR: Invalid viewport data ({}, {})", width, height) << std::endl;
+        return;
     }
 
-    std::cout << "INFO: Adjusting renderer: (" << width << ", " << height << ")" << std::endl;
+    std::cout << std::format("INFO: Adjusting renderer: ({}, {})", width, height) << std::endl;
     // clang-format off
     m_projection = glm::ortho(
         0.0f,
