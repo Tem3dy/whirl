@@ -2,7 +2,7 @@
 
 #include <glad/gl.h>
 
-#include "renderer/Renderer.hpp"
+#include "Renderer.hpp"
 
 bool Renderer::Open()
 {

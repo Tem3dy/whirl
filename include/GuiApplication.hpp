@@ -6,7 +6,7 @@
 #include <GLFW/glfw3.h>
 
 #include "VideoMode.hpp"
-#include "renderer/Renderer.hpp"
+#include "Renderer.hpp"
 
 class GuiApplication
 {

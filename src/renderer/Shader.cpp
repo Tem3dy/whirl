@@ -4,7 +4,7 @@
 
 #include <glad/gl.h>
 
-#include "renderer/Shader.hpp"
+#include "Shader.hpp"
 
 static bool Compile(unsigned int shader, const char* source)
 {

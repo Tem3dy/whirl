@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include "math/Math.hpp"
+
+#include "Math.hpp"
 
 class Shader
 {

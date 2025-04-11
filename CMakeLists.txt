@@ -70,8 +70,10 @@ target_compile_features(${PROJECT_NAME} PUBLIC
 # Add the include directory to the include path
 target_include_directories(${PROJECT_NAME} PUBLIC
     # Whirl include path
-    include
-
+    include/
+    include/math/
+    include/renderer/
+    
     # GLM include path
     ${glm_SOURCE_DIR}
 )

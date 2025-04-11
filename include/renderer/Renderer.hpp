@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <vector>
 
-#include "math/Math.hpp"
-#include "renderer/Color.hpp"
-#include "renderer/Shader.hpp"
+#include "Math.hpp"
+#include "Color.hpp"
+#include "Shader.hpp"
 
 struct Quad
 {
