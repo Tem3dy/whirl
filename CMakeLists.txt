@@ -55,11 +55,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add the library target
 add_library(${PROJECT_NAME} STATIC
+    # Interface
     src/Whirl.cpp
     src/GuiApplication.cpp
-
-    src/renderer/Shader.cpp
+    
+    # Renderer
     src/renderer/Renderer.cpp
+    src/renderer/Shader.cpp
 )
 
 # Compile with C++ 20
@@ -73,6 +75,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     include/
     include/math/
     include/renderer/
+    include/logger
     
     # GLM include path
     ${glm_SOURCE_DIR}
