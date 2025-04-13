@@ -1,10 +1,9 @@
 #pragma once
 
-#include <glad/gl.h>
-#include <GLFW/glfw3.h>
-
 #include "VideoMode.hpp"
 #include "Renderer.hpp"
+
+struct GLFWwindow;
 
 class GuiApplication
 {
