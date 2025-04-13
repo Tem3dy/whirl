@@ -39,6 +39,16 @@ FetchContent_Declare(
 # Make GLM available
 FetchContent_MakeAvailable(glm)
 
+# Fetch FMT
+FetchContent_Declare(
+    fmt
+    GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+    GIT_TAG 11.1.4
+)
+
+# Make FMT available
+FetchContent_MakeAvailable(fmt)
+
 # Compile GLAD as a static library
 add_library(glad STATIC
     lib/glad/src/gl.c
@@ -85,6 +95,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME} PUBLIC
     glfw
     glad
+    fmt
     OpenGL::GL
 )
 
