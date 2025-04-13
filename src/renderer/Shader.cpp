@@ -1,14 +1,15 @@
-#include <iostream>
 #include <fstream>
 #include <vector>
+#include <string>
 
 #include <glad/gl.h>
 
 #include "Shader.hpp"
+#include "Logger.hpp"
 
 static bool Compile(unsigned int shader, const char* source)
 {
-    std::cout << "INFO: Compiling shader..." << std::endl;
+    WHIRL_INFO("Compiling shader...");
     glShaderSource(shader, 1, &source, nullptr);
     glCompileShader(shader);
 
@@ -22,7 +23,7 @@ static bool Compile(unsigned int shader, const char* source)
         std::vector<char> log(size);
         glGetShaderInfoLog(shader, size, nullptr, log.data());
 
-        std::cerr << "ERROR: Failed to compile shader: \n" << log.data() << std::endl;
+        WHIRL_ERROR("Failed to compile shader: \n", log.data());
         return false;
     }
 
@@ -31,7 +32,7 @@ static bool Compile(unsigned int shader, const char* source)
 
 static bool Link(unsigned int program, unsigned int vShader, unsigned int fShader)
 {
-    std::cout << "INFO: Linking shaders..." << std::endl;
+    WHIRL_INFO("Linking shaders...");
     glAttachShader(program, vShader);
     glAttachShader(program, fShader);
     glLinkProgram(program);
@@ -46,7 +47,7 @@ static bool Link(unsigned int program, unsigned int vShader, unsigned int fShade
         std::vector<char> log(size);
         glGetProgramInfoLog(program, size, nullptr, log.data());
 
-        std::cerr << "ERROR: Failed to link shader program: \n" << log.data() << std::endl;
+        WHIRL_ERROR("Failed to link shader program: \n", log.data());
         return false;
     }
 
@@ -58,11 +59,11 @@ static bool Link(unsigned int program, unsigned int vShader, unsigned int fShade
 
 bool Shader::Load(const std::string& path)
 {
-    std::cout << "INFO: Reading shader file: " << path << std::endl;
+    WHIRL_INFO("Reading shader file: {}", path);
     std::ifstream shaderFile(path);
     if (!shaderFile)
     {
-        std::cerr << "ERROR: Failed to open a shader file: " << path << std::endl;
+        WHIRL_ERROR("Failed to open shader file: {}", path);
         return false;
     }
 
@@ -78,8 +79,8 @@ bool Shader::Load(const std::string& path)
         {
             if (line.find("vertex") == std::string::npos && line.find("fragment") == std::string::npos)
             {
-                std::cerr << "ERROR: Unknown shader tag found in: " << path << std::endl;
-                std::cerr << "-> " << line << " <-" << std::endl;
+                WHIRL_ERROR("Unknown shader tag found in: {}", path);
+                WHIRL_ERROR("-> {} <-", line);
                 return false;
             }
         }
@@ -88,7 +89,7 @@ bool Shader::Load(const std::string& path)
         {
             if (readingFragment)
             {
-                std::cout << "INFO: Reading vertex shader source..." << std::endl;
+                WHIRL_INFO("Reading vertex shader source...");
                 readingFragment = false;
                 readingVertex = true;
                 continue;
@@ -96,12 +97,12 @@ bool Shader::Load(const std::string& path)
 
             if (readingVertex)
             {
-                std::cerr << "ERROR: Unexpected shader tag found in: " << path << std::endl;
-                std::cerr << "-> " << line << " <- " << std::endl;
+                WHIRL_ERROR("Unexpected shader tag found in: {}", path);
+                WHIRL_ERROR("-> {} <-", line);
                 return false;
             }
 
-            std::cout << "INFO: Reading vertex shader source..." << std::endl;
+            WHIRL_INFO("Reading vertex shader source...");
             readingVertex = true;
             continue;
         }
@@ -110,7 +111,7 @@ bool Shader::Load(const std::string& path)
         {
             if (readingVertex)
             {
-                std::cout << "INFO: Reading fragment shader source..." << std::endl;
+                WHIRL_INFO("Reading fragment shader source...");
                 readingVertex = false;
                 readingFragment = true;
                 continue;
@@ -118,12 +119,12 @@ bool Shader::Load(const std::string& path)
 
             if (readingFragment)
             {
-                std::cerr << "ERROR: Unexpected shader tag found in: " << path << std::endl;
-                std::cerr << "-> " << line << " <- " << std::endl;
+                WHIRL_ERROR("Unexpected shader tag found in: {}", path);
+                WHIRL_ERROR("-> {} <-", line);
                 return false;
             }
 
-            std::cout << "INFO: Reading fragment shader source..." << std::endl;
+            WHIRL_INFO("Reading fragment shader source...");
             readingFragment = true;
             continue;
         }
@@ -147,11 +148,11 @@ bool Shader::Load(const std::string& path)
 
     if (vShaderCode.empty() || fShaderCode.empty())
     {
-        std::cerr << "ERROR: Missing shader code in: " << path << std::endl;
+        WHIRL_ERROR("Missing shader code in: {}", path);
         return false;
     }
 
-    std::cout << "INFO: Shader source loaded successfully from file: " << path << std::endl;
+    WHIRL_INFO("Shader source loaded successfully from file: {}", path);
     shaderFile.close();
 
     // Pass shaders to OpenGL
@@ -167,7 +168,7 @@ bool Shader::Load(const std::string& path)
     if (!Link(m_program, vShader, fShader))
         return false;
     
-    std::cout << "INFO: Shader constructed successfully from file: " << path << std::endl;
+    WHIRL_INFO("Shader constructed successfully from file: {}", path);
     return true;
 }
 
@@ -175,7 +176,7 @@ void Shader::Use()
 {
     if (m_program == 0)
     {
-        std::cerr << "ERROR: Tried to use an invalid shader" << std::endl;
+        WHIRL_ERROR("Tried to use an invalid shader");
         return;
     }
 
@@ -199,7 +200,7 @@ bool Shader::SetBool(const std::string& name, bool value) const
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
     {
-        std::cerr << "ERROR: Tried uploading a uniform bool to an unknown variable: " << name << std::endl;
+        WHIRL_ERROR("Tried uploading a uniform bool to an unknown variable: {}", name);
         return false;
     }
 
@@ -212,7 +213,7 @@ bool Shader::SetInt(const std::string& name, int value) const
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
     {
-        std::cerr << "ERROR: Tried uploading a uniform int to an unknown variable: " << name << std::endl;
+        WHIRL_ERROR("Tried uploading a uniform int to an unknown variable: {}", name);
         return false;
     }
 
@@ -225,7 +226,7 @@ bool Shader::SetUInt(const std::string& name, unsigned int value) const
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
     {
-        std::cerr << "ERROR: Tried uploading a uniform uint to an unknown variable: " << name << std::endl;
+        WHIRL_ERROR("Tried uploading a uniform uint to an unknown variable: {}", name);
         return false;
     }
 
@@ -238,7 +239,7 @@ bool Shader::SetFloat(const std::string& name, float value) const
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
     {
-        std::cerr << "ERROR: Tried uploading a uniform float to an unknown variable: " << name << std::endl;
+        WHIRL_ERROR("Tried uploading a uniform float to an unknown variable: {}", name);
         return false;
     }
 
@@ -251,7 +252,7 @@ bool Shader::SetMat4(const std::string& name, const glm::mat4& matrix) const
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
     {
-        std::cerr << "ERROR: Tried uploading a uniform mat4 to an unknown variable: " << name << std::endl;
+        WHIRL_ERROR("Tried uploading a uniform mat4 to an unknown variable: {}", name);
         return false;
     }
 

@@ -1,6 +1,5 @@
-#include <iostream>
-
 #include "GuiApplication.hpp"
+#include "Logger.hpp"
 
 GuiApplication::GuiApplication(const VideoMode& mode)
     : m_mode(mode),
@@ -12,13 +11,13 @@ int GuiApplication::Launch()
 {
     // clang-format off
     glfwSetErrorCallback([](int error, const char* description) {
-        std::cerr << "GLFW Error: " << error << ": " << description << std::endl;
+        WHIRL_ERROR("GLFW: {} -> {}", error, description);
     });
     // clang-format on
 
     if (!glfwInit())
     {
-        std::cerr << "ERROR: Failed to initialize GLFW" << std::endl;
+        WHIRL_ERROR("Failed to initialize GLFW");
         return 1;
     }
 
@@ -29,7 +28,7 @@ int GuiApplication::Launch()
     m_window = glfwCreateWindow(m_mode.width, m_mode.height, m_mode.title.c_str(), 0, 0);
     if (!m_window)
     {
-        std::cerr << "ERROR: Failed to create a window" << std::endl;
+        WHIRL_ERROR("Failed to create a window");
         glfwTerminate();
         return 1;
     }
@@ -41,15 +40,14 @@ int GuiApplication::Launch()
     // Load GLAD
     if (!gladLoadGL(glfwGetProcAddress))
     {
-        std::cerr << "ERROR: Failed to initialize GLAD" << std::endl;
+        WHIRL_ERROR("Failed to initialize GLAD");
         glfwDestroyWindow(m_window);
         glfwTerminate();
         return 1;
     }
 
-    std::cout << "INFO: OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
-    std::cout << "INFO: GLFW Version: " << glfwGetVersionString() << std::endl;
-
+    WHIRL_INFO("OpenGL Version: {}", reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+    WHIRL_INFO("GLFW Version: {}", glfwGetVersionString());
     // Set up window user pointer
     glfwSetWindowUserPointer(m_window, this);
 

@@ -1,21 +1,23 @@
-#include <iostream>
-#include <format>
-
 #include <glad/gl.h>
 
+#include <cstdint>
+#include <vector>
+
+#include "Math.hpp"
 #include "Renderer.hpp"
+#include "Logger.hpp"
 
 bool Renderer::Open()
 {
     if (m_isOpen)
     {
-        std::cerr << "ERROR: Tried to open a renderer that's already open" << std::endl;
+        WHIRL_ERROR("Tried to open a renderer that's already open");
         return false;
     }
 
     if (!m_quadShader.Load("assets/shaders/quad.wsh"))
     {
-        std::cerr << "ERROR: Failed to load the quad shader" << std::endl;
+        WHIRL_ERROR("Failed to load the quad shader");
         return false;
     }
 
@@ -40,7 +42,7 @@ bool Renderer::Open()
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    std::cout << "INFO: Renderer opened successfully" << std::endl;
+    WHIRL_INFO("Renderer opened successfully");
     return true;
 }
 
@@ -48,7 +50,7 @@ bool Renderer::Close()
 {
     if (!m_isOpen)
     {
-        std::cerr << "ERROR: Tried to close a renderer that's already closed" << std::endl;
+        WHIRL_ERROR("Tried to close a renderer that's already closed");
         return false;
     }
 
@@ -59,7 +61,7 @@ bool Renderer::Close()
     glDeleteBuffers(1, &m_quadIndexBuf);
     m_quadList.clear();
 
-    std::cout << "INFO: Rendered closed successfully" << std::endl;
+    WHIRL_INFO("Renderer closed successfully");
     return true;
 }
 
@@ -67,7 +69,7 @@ bool Renderer::Flush()
 {
     if (!m_isOpen)
     {
-        std::cerr << "ERROR: Tried to flush a closed renderer" << std::endl;
+        WHIRL_ERROR("Tried to flush a closed renderer");
         return false;
     }
 
@@ -121,30 +123,28 @@ void Renderer::DrawQuad(float x, float y, float w, float h, uint32_t color)
 {
     if (!m_isOpen)
     {
-        std::cerr << "ERROR: Tried to draw a quad with a closed renderer" << std::endl;
+        WHIRL_ERROR("Tried to draw a quad with a closed renderer");
         return;
     }
 
     if (x < 0 || y < 0)
     {
-        // This needs a logger badly
-        std::cerr << std::format("ERROR: Invalid quad coordinates ({}, {})", x, y) << std::endl;
+        WHIRL_WARN("Invalid quad coordinates: ({}, {})", x, y);
         return;
     }
 
     if (w <= 0 || h <= 0)
     {
-        // Same here
-        std::cerr << std::format("ERROR: Invalid quad dimensions ({}, {})", w, h) << std::endl;
+        WHIRL_WARN("Invalid quad dimensions: ({}, {})", w, h);
         return;
     }
 
     if (m_quadList.size() == m_quadList.capacity())
     {
-        // TODO: Should be DEBUG instead of INFO, log more details later on
-        std::cout << "INFO: Reserving more memory for rendering quads" << std::endl;
+        const size_t newCapacity = static_cast<size_t>(m_quadList.capacity() * 1.5);
+        WHIRL_DEBUG("Reserving more memory for rendering quads: ({} -> {})", m_quadList.capacity(), newCapacity);
         // TODO: Potentially check for overflows (shouldn't happen though)
-        m_quadList.reserve(static_cast<size_t>(m_quadList.capacity() * 1.5));
+        m_quadList.reserve(newCapacity);
     }
 
     m_quadList.emplace_back(x, y, w, h, color);
@@ -165,11 +165,11 @@ void Renderer::Adjust(int width, int height)
     // Shouldn't happen, but just in case
     if (width <= 0 || height <= 0)
     {
-        std::cerr << std::format("ERROR: Invalid viewport data ({}, {})", width, height) << std::endl;
+        WHIRL_WARN("Invalid viewport data: ({}, {})", width, height);
         return;
     }
 
-    std::cout << std::format("INFO: Adjusting renderer: ({}, {})", width, height) << std::endl;
+    WHIRL_INFO("Adjusting renderer: ({}, {})", width, height);
     // clang-format off
     m_projection = glm::ortho(
         0.0f,
