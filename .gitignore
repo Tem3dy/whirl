@@ -3,3 +3,8 @@ build/
 
 # Editor files
 .vscode/
+
+# Clangd files
+.clangd
+compile_commands.json
+.cache/
