@@ -19,29 +19,31 @@ enum class Level
 class Logger
 {
 public:
+    // Main logging functions
     template <typename... Args>
-    static void Log(Level level, const std::string_view msg, Args&&... args);
+    static void Log(Level level, std::string_view msg, Args&&... args);
 
     template <typename... Args>
-    static void Force(Level level, const std::string_view msg, Args&&... args);
+    static void Force(Level level, std::string_view msg, Args&&... args);
     
+    // Level-specific logging functions
     template <typename... Args>
-    static void Trace(const std::string_view msg, Args&&... args);
+    static void Trace(std::string_view msg, Args&&... args);
 
     template <typename... Args>
-    static void Debug(const std::string_view msg, Args&&... args);
+    static void Debug(std::string_view msg, Args&&... args);
 
     template <typename... Args>
-    static void Info(const std::string_view msg, Args&&... args);
+    static void Info(std::string_view msg, Args&&... args);
 
     template <typename... Args>
-    static void Warn(const std::string_view msg, Args&&... args);
+    static void Warn(std::string_view msg, Args&&... args);
 
     template <typename... Args>
-    static void Error(const std::string_view msg, Args&&... args);
+    static void Error(std::string_view msg, Args&&... args);
 
     template <typename... Args>
-    static void Fatal(const std::string_view msg, Args&&... args);
+    static void Fatal(std::string_view msg, Args&&... args);
 
     static void SetLevel(Level level);
     static Level GetLevel();
