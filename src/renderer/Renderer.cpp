@@ -143,7 +143,7 @@ void Renderer::DrawQuad(float x, float y, float w, float h, uint32_t color)
     {
         // TODO: Should be DEBUG instead of INFO, log more details later on
         std::cout << "INFO: Reserving more memory for rendering quads" << std::endl;
-        m_quadList.reserve(m_quadList.capacity() * 2);
+        m_quadList.reserve(static_cast<size_t>(m_quadList.capacity() * 1.5));
     }
 
     m_quadList.emplace_back(x, y, w, h, color);
