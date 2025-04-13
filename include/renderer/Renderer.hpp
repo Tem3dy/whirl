@@ -7,6 +7,7 @@
 #include "Color.hpp"
 #include "Shader.hpp"
 
+#pragma pack(1)
 struct Quad
 {
     float x, y;
@@ -19,6 +20,7 @@ struct QuadVertex
     float x, y;
     uint32_t color;
 };
+#pragma pack()
 
 class Renderer
 {
