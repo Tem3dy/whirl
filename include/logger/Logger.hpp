@@ -9,6 +9,14 @@
 #include <fmt/chrono.h>
 
 // clang-format off
+#define BLUE  "\033[34m"
+#define GREEN "\033[32m"
+#define WHITE "\033[97m"
+#define YELLOW "\033[33m"
+#define RED   "\033[31m"
+#define MAGENTA "\033[35m"
+#define RESET "\033[0m"
+
 #define WHIRL_TRACE(...) Logger::Trace(__VA_ARGS__)
 #define WHIRL_DEBUG(...) Logger::Debug(__VA_ARGS__)
 #define WHIRL_INFO(...)  Logger::Info(__VA_ARGS__)
@@ -51,16 +59,16 @@ public:
             return;
         }
 
-        const std::string head = fmt::format("[{}, {}]: ", GetHeadTime(), GetHeadLevel(level));
+        const std::string head = fmt::format("{}[{}, {}]: ", GetHeadColor(level), GetHeadTime(), GetHeadLevel(level));
         const std::string body = fmt::format(fmt::runtime(msg), std::forward<Args>(args)...);
         if (level >= Level::ERROR)
         {
-            std::cerr << head << body << std::endl;
+            std::cerr << head << body << RESET << std::endl;
             // Maybe flush and terminate if level = FATAL
         }
         else
         {
-            std::cout << head << body << std::endl;
+            std::cout << head << body << RESET << std::endl;
         }
     }
 
@@ -146,6 +154,29 @@ private:
         };
 
         return levels[static_cast<int>(level)];
+    }
+
+    static std::string GetHeadColor(Level level)
+    {
+        switch (level)
+        {
+            case Level::OFF:
+                return "";
+            case Level::TRACE:
+                return BLUE;
+            case Level::DEBUG:
+                return GREEN;
+            case Level::INFO:
+                return WHITE;
+            case Level::WARN:
+                return YELLOW;
+            case Level::ERROR:
+                return RED;
+            case Level::FATAL:
+                return MAGENTA;
+            default:
+                return "";
+        }
     }
 
     static std::string GetHeadTime()
