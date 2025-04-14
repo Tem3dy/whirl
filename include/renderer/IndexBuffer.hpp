@@ -10,11 +10,13 @@ public:
     IndexBuffer();
     ~IndexBuffer();
 
-    IndexBuffer(const IndexBuffer&) = delete;
-    IndexBuffer(IndexBuffer&&) = delete;
+    // Move
+    IndexBuffer(IndexBuffer&& other) noexcept;
+    IndexBuffer& operator=(IndexBuffer&& other) noexcept;
 
+    // Copy
+    IndexBuffer(const IndexBuffer&) = delete;
     IndexBuffer& operator=(const IndexBuffer&) = delete;
-    IndexBuffer& operator=(IndexBuffer&&) = delete;
 
 public:
     void Data(const void* data, uint32_t size, DrawMode mode);

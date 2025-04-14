@@ -9,7 +9,25 @@ IndexBuffer::IndexBuffer()
 
 IndexBuffer::~IndexBuffer()
 {
-    glDeleteBuffers(1, &m_id);
+    if (m_id != 0)
+        glDeleteBuffers(1, &m_id);
+}
+
+IndexBuffer::IndexBuffer(IndexBuffer&& other) noexcept
+    : m_id(other.m_id)
+{
+    other.m_id = 0;
+}
+
+IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other) noexcept
+{
+    if (this != &other)
+    {
+        m_id = other.m_id;
+        other.m_id = 0;
+    }
+
+    return *this;
 }
 
 void IndexBuffer::Data(const void* data, uint32_t size, DrawMode mode)
