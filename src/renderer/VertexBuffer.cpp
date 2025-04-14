@@ -19,12 +19,12 @@ void VertexBuffer::Data(const void* data, uint32_t size, DrawMode mode)
     Unbind();
 }
 
-void VertexBuffer::Bind()
+void VertexBuffer::Bind() const
 {
     glBindBuffer(GL_ARRAY_BUFFER, m_id);
 }
 
-void VertexBuffer::Unbind()
+void VertexBuffer::Unbind() const
 {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
