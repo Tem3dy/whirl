@@ -32,9 +32,7 @@ IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other) noexcept
 
 void IndexBuffer::Data(const void* data, uint32_t size, DrawMode mode)
 {
-    Bind();
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, data, GetMode(mode));
-    Unbind();
 }
 
 void IndexBuffer::Bind() const

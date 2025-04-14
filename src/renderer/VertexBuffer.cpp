@@ -32,9 +32,7 @@ VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other) noexcept
 
 void VertexBuffer::Data(const void* data, uint32_t size, DrawMode mode)
 {
-    Bind();
     glBufferData(GL_ARRAY_BUFFER, size, data, GetMode(mode));
-    Unbind();
 }
 
 void VertexBuffer::Bind() const
