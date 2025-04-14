@@ -26,5 +26,5 @@ public:
     uint32_t GetBuffer() const;
 
 private:
-    uint32_t m_id = 0;
+    uint32_t m_buffer = 0;
 };

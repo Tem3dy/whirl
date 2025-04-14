@@ -4,27 +4,27 @@
 
 VertexBuffer::VertexBuffer()
 {
-    glGenBuffers(1, &m_id);
+    glGenBuffers(1, &m_buffer);
 }
 
 VertexBuffer::~VertexBuffer()
 {
-    if (m_id != 0)
-        glDeleteBuffers(1, &m_id);
+    if (m_buffer != 0)
+        glDeleteBuffers(1, &m_buffer);
 }
 
 VertexBuffer::VertexBuffer(VertexBuffer&& other) noexcept
-    : m_id(other.m_id)
+    : m_buffer(other.m_buffer)
 {
-    other.m_id = 0;
+    other.m_buffer = 0;
 }
 
 VertexBuffer& VertexBuffer::operator=(VertexBuffer&& other) noexcept
 {
     if (this != &other)
     {
-        m_id = other.m_id;
-        other.m_id = 0;
+        m_buffer = other.m_buffer;
+        other.m_buffer = 0;
     }
 
     return *this;
@@ -39,7 +39,7 @@ void VertexBuffer::Data(const void* data, uint32_t size, DrawMode mode)
 
 void VertexBuffer::Bind() const
 {
-    glBindBuffer(GL_ARRAY_BUFFER, m_id);
+    glBindBuffer(GL_ARRAY_BUFFER, m_buffer);
 }
 
 void VertexBuffer::Unbind() const
@@ -49,5 +49,5 @@ void VertexBuffer::Unbind() const
 
 uint32_t VertexBuffer::GetBuffer() const
 {
-    return m_id;
+    return m_buffer;
 }

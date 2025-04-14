@@ -4,27 +4,27 @@
 
 IndexBuffer::IndexBuffer()
 {
-    glGenBuffers(1, &m_id);
+    glGenBuffers(1, &m_buffer);
 }
 
 IndexBuffer::~IndexBuffer()
 {
-    if (m_id != 0)
-        glDeleteBuffers(1, &m_id);
+    if (m_buffer != 0)
+        glDeleteBuffers(1, &m_buffer);
 }
 
 IndexBuffer::IndexBuffer(IndexBuffer&& other) noexcept
-    : m_id(other.m_id)
+    : m_buffer(other.m_buffer)
 {
-    other.m_id = 0;
+    other.m_buffer = 0;
 }
 
 IndexBuffer& IndexBuffer::operator=(IndexBuffer&& other) noexcept
 {
     if (this != &other)
     {
-        m_id = other.m_id;
-        other.m_id = 0;
+        m_buffer = other.m_buffer;
+        other.m_buffer = 0;
     }
 
     return *this;
@@ -39,7 +39,7 @@ void IndexBuffer::Data(const void* data, uint32_t size, DrawMode mode)
 
 void IndexBuffer::Bind() const
 {
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_buffer);
 }
 
 void IndexBuffer::Unbind() const
@@ -49,5 +49,5 @@ void IndexBuffer::Unbind() const
 
 uint32_t IndexBuffer::GetBuffer() const
 {
-    return m_id;
+    return m_buffer;
 }
