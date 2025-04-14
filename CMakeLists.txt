@@ -72,7 +72,6 @@ add_library(${PROJECT_NAME} STATIC
     # Renderer
     src/renderer/Renderer.cpp
     src/renderer/Shader.cpp
-
     src/renderer/VertexBuffer.cpp
     src/renderer/IndexBuffer.cpp
 )
