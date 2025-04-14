@@ -10,6 +10,12 @@ public:
     VertexBuffer();
     ~VertexBuffer();
 
+    VertexBuffer(const VertexBuffer&) = delete;
+    VertexBuffer(VertexBuffer&&) = delete;
+    
+    VertexBuffer& operator=(const VertexBuffer&) = delete;
+    VertexBuffer& operator=(VertexBuffer&&) = delete;
+
 public:
     void Data(const void* data, uint32_t size, DrawMode mode);
     void Bind() const;
