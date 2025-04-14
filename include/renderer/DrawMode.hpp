@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+// Could only define the necessary symbols without including gl.h
 #include <glad/gl.h>
 
 enum class DrawMode
