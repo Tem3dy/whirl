@@ -32,7 +32,7 @@ class Renderer
 public:
     bool Open();
     bool Close();
-    bool Flush();
+    bool Submit();
 
     void DrawQuad(float x, float y, float w, float h, uint32_t color = Color::White());
     void DrawVLine(float x, float y, float length, float thickness, uint32_t color = Color::White());

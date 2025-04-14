@@ -62,15 +62,14 @@ bool Renderer::Close()
     return true;
 }
 
-bool Renderer::Flush()
+bool Renderer::Submit()
 {
     if (!m_isOpen)
     {
-        WHIRL_ERROR("Tried to flush a closed renderer");
+        WHIRL_ERROR("Tried to submit to a closed renderer");
         return false;
     }
 
-    // Render and flush
     std::vector<QuadVertex> quadVertices;
     quadVertices.reserve(4 * m_quadList.size());
     std::vector<uint32_t> quadIndices;
