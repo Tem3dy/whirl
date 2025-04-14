@@ -14,35 +14,8 @@ VertexBuffer::~VertexBuffer()
 
 void VertexBuffer::Data(const void* data, uint32_t size, DrawMode mode)
 {
-    uint32_t usage;
-    switch (mode)
-    {
-        case DrawMode::STATIC:
-        {
-            usage = GL_STATIC_DRAW;
-            break;
-        }
-
-        case DrawMode::DYNAMIC:
-        {
-            usage = GL_DYNAMIC_DRAW;
-            break;
-        }
-
-        case DrawMode::STREAM:
-        {
-            usage = GL_STREAM_DRAW;
-            break;
-        }
-
-        default:
-        {
-            usage = GL_STATIC_DRAW;
-        }
-    }
-
     Bind();
-    glBufferData(GL_ARRAY_BUFFER, size, data, usage);
+    glBufferData(GL_ARRAY_BUFFER, size, data, GetMode(mode));
     Unbind();
 }
 

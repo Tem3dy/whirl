@@ -2,12 +2,7 @@
 
 #include <cstdint>
 
-enum class DrawMode
-{
-    STATIC,
-    DYNAMIC,
-    STREAM,
-};
+#include "DrawMode.hpp"
 
 class VertexBuffer
 {
@@ -21,5 +16,5 @@ public:
     void Unbind();
 
 private:
-    uint32_t m_id;
+    uint32_t m_id = 0;
 };
