@@ -6,14 +6,17 @@
 IndexBuffer::IndexBuffer()
 {
     glGenBuffers(1, &m_buffer);
+    WHIRL_DEBUG("Creating index buffer: {}", m_buffer);
 }
 
 IndexBuffer::~IndexBuffer()
 {
-    // Paranoia
-    WHIRL_DEBUG("Deleting index buffer: {}", m_buffer);
     if (m_buffer != 0)
+    {
+        // Paranoia
+        WHIRL_DEBUG("Deleting index buffer: {}", m_buffer);
         glDeleteBuffers(1, &m_buffer);
+    }
 }
 
 IndexBuffer::IndexBuffer(IndexBuffer&& other) noexcept

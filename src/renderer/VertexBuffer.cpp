@@ -6,14 +6,17 @@
 VertexBuffer::VertexBuffer()
 {
     glGenBuffers(1, &m_buffer);
+    WHIRL_DEBUG("Creating vertex buffer: {}", m_buffer);
 }
 
 VertexBuffer::~VertexBuffer()
 {
-    // Paranoia
-    WHIRL_DEBUG("Deleting vertex buffer: {}", m_buffer);
     if (m_buffer != 0)
+    {
+        // Paranoia
+        WHIRL_DEBUG("Deleting vertex buffer: {}", m_buffer);
         glDeleteBuffers(1, &m_buffer);
+    }
 }
 
 VertexBuffer::VertexBuffer(VertexBuffer&& other) noexcept
