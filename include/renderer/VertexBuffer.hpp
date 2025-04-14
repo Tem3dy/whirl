@@ -21,6 +21,8 @@ public:
     void Bind() const;
     void Unbind() const;
 
+    uint32_t GetBuffer() const;
+
 private:
     uint32_t m_id = 0;
 };
