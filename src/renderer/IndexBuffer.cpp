@@ -1,6 +1,7 @@
 #include <glad/gl.h>
 
 #include "IndexBuffer.hpp"
+#include "Logger.hpp"
 
 IndexBuffer::IndexBuffer()
 {
@@ -9,6 +10,8 @@ IndexBuffer::IndexBuffer()
 
 IndexBuffer::~IndexBuffer()
 {
+    // Paranoia
+    WHIRL_DEBUG("Deleting index buffer: {}", m_buffer);
     if (m_buffer != 0)
         glDeleteBuffers(1, &m_buffer);
 }

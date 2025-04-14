@@ -1,6 +1,7 @@
 #include <glad/gl.h>
 
 #include "VertexBuffer.hpp"
+#include "Logger.hpp"
 
 VertexBuffer::VertexBuffer()
 {
@@ -9,6 +10,8 @@ VertexBuffer::VertexBuffer()
 
 VertexBuffer::~VertexBuffer()
 {
+    // Paranoia
+    WHIRL_DEBUG("Deleting vertex buffer: {}", m_buffer);
     if (m_buffer != 0)
         glDeleteBuffers(1, &m_buffer);
 }
