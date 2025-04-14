@@ -2,10 +2,13 @@
 
 #include <cstdint>
 #include <vector>
+#include <memory>
 
 #include "Math.hpp"
 #include "Color.hpp"
 #include "Shader.hpp"
+#include "VertexBuffer.hpp"
+#include "IndexBuffer.hpp"
 
 // Ensure no padding
 #pragma pack(1)
@@ -41,9 +44,11 @@ private:
     bool m_isOpen = false;
     glm::mat4 m_projection;
 
+    // Quads
     Shader m_quadShader;
     std::vector<Quad> m_quadList;
-    unsigned int m_quadVertexBuf;
-    unsigned int m_quadIndexBuf;
+    std::unique_ptr<VertexBuffer> m_quadVertexBuf;
+    std::unique_ptr<IndexBuffer> m_quadIndexBuf;
+    // Make this a std::unique_ptr<VertexArray> later on
     unsigned int m_quadArray;
 };

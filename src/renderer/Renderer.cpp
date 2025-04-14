@@ -26,12 +26,11 @@ bool Renderer::Open()
 
     // Initialize OpenGL resources
     glGenVertexArrays(1, &m_quadArray);
-
-    glGenBuffers(1, &m_quadVertexBuf);
-    glGenBuffers(1, &m_quadIndexBuf);
+    m_quadVertexBuf = std::make_unique<VertexBuffer>();
+    m_quadIndexBuf = std::make_unique<IndexBuffer>();
 
     glBindVertexArray(m_quadArray);
-    glBindBuffer(GL_ARRAY_BUFFER, m_quadVertexBuf);
+    m_quadVertexBuf->Bind();
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(QuadVertex), (const void*) 0);
     glEnableVertexAttribArray(0);
@@ -40,7 +39,7 @@ bool Renderer::Open()
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    m_quadVertexBuf->Unbind();
 
     WHIRL_INFO("Renderer opened successfully");
     return true;
@@ -57,8 +56,6 @@ bool Renderer::Close()
     m_isOpen = false;
     // Delete OpenGL resources
     glDeleteVertexArrays(1, &m_quadArray);
-    glDeleteBuffers(1, &m_quadVertexBuf);
-    glDeleteBuffers(1, &m_quadIndexBuf);
     m_quadList.clear();
 
     WHIRL_INFO("Renderer closed successfully");
@@ -100,21 +97,19 @@ bool Renderer::Flush()
     }
 
     glBindVertexArray(m_quadArray);
+    m_quadVertexBuf->Bind();
+    m_quadVertexBuf->Data(quadVertices.data(), quadVertices.size() * sizeof(QuadVertex), DrawMode::DYNAMIC);
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_quadVertexBuf);
-    glBufferData(GL_ARRAY_BUFFER, quadVertices.size() * sizeof(QuadVertex), quadVertices.data(), GL_DYNAMIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_quadIndexBuf);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, quadIndices.size() * sizeof(uint32_t), quadIndices.data(), GL_DYNAMIC_DRAW);
+    m_quadIndexBuf->Bind();
+    m_quadIndexBuf->Data(quadIndices.data(), quadIndices.size() * sizeof(uint32_t), DrawMode::DYNAMIC);
 
     m_quadShader.SetMat4("u_Projection", m_projection);
     m_quadShader.Use();
     glDrawElements(GL_TRIANGLES, quadIndices.size(), GL_UNSIGNED_INT, nullptr);
 
     glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
+    m_quadVertexBuf->Unbind();
+    m_quadIndexBuf->Unbind();
     m_quadList.clear();
     return true;
 }
