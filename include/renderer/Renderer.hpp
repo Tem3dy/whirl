@@ -7,6 +7,7 @@
 #include "Color.hpp"
 #include "Shader.hpp"
 
+// Ensure no padding
 #pragma pack(1)
 struct Quad
 {
@@ -21,6 +22,7 @@ struct QuadVertex
     uint32_t color;
 };
 #pragma pack()
+// Reset padding
 
 class Renderer
 {
