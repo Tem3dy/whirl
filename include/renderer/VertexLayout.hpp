@@ -53,4 +53,20 @@ namespace VertexLayout
 
         return offset;
     }
+
+    inline uint32_t GetType(VertexFormat format)
+    {
+        switch (format)
+        {
+            case VertexFormat::FLOAT:
+                return GL_FLOAT;
+            case VertexFormat::INT:
+                return GL_INT;
+            case VertexFormat::UINT:
+                return GL_UNSIGNED_INT;
+
+            default:
+                return GL_FLOAT;
+        }
+    }
 };
