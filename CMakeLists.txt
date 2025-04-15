@@ -74,6 +74,7 @@ add_library(${PROJECT_NAME} STATIC
     src/renderer/Shader.cpp
     src/renderer/VertexBuffer.cpp
     src/renderer/IndexBuffer.cpp
+    src/renderer/VertexArray.cpp
 )
 
 # Compile with C++ 20
