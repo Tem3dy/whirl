@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "fmt/format.h"
+
 class WhirlError : public std::exception
 {
 public:
@@ -16,6 +18,12 @@ public:
     void Context(const std::string& error)
     {
         m_context.push_back(error);
+    }
+
+    template <typename... Args>
+    void Context(const std::string& error, Args&&... args)
+    {
+        m_context.push_back(fmt::format(error, std::forward<Args>(args)...));
     }
 
     std::vector<std::string> Get() const
