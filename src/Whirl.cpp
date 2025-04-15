@@ -5,19 +5,19 @@ std::optional<GuiApplication> Whirl::CreateApplication(int width, int height, co
 {
     if (title.empty())
     {
-        WHIRL_ERROR("Title cannot be empty");
+        WHIRL_FATAL("Title cannot be empty");
         return std::nullopt;
     }
     
     if (width <= 0)
     {
-        WHIRL_ERROR("Width cannot be <= 0");
+        WHIRL_FATAL("Width cannot be <= 0");
         return std::nullopt;
     }
 
     if (height <= 0)
     {
-        WHIRL_ERROR("Height cannot be <= 0");
+        WHIRL_FATAL("Height cannot be <= 0");
         return std::nullopt;
     }
 
