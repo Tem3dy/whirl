@@ -35,7 +35,7 @@ VertexArray::VertexArray(VertexBuffer&& vertexBuf, IndexBuffer&& indexBuf, const
                 VertexLayout::GetType(attribute.format),
                 GL_FALSE,
                 VertexLayout::GetStride(layout),
-                (const void*) VertexLayout::GetOffset(layout, i)
+                reinterpret_cast<const void*>(VertexLayout::GetOffset(layout, i))
             );
         }
         else
@@ -45,7 +45,7 @@ VertexArray::VertexArray(VertexBuffer&& vertexBuf, IndexBuffer&& indexBuf, const
                 attribute.size,
                 VertexLayout::GetType(attribute.format),
                 VertexLayout::GetStride(layout),
-                (const void*) VertexLayout::GetOffset(layout, i)
+                reinterpret_cast<const void*>(VertexLayout::GetOffset(layout, i))
             );
             // clang-format on
         }
