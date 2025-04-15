@@ -28,7 +28,7 @@ GuiRenderer::GuiRenderer()
     }
     catch (WhirlError& error)
     {
-        error.Context("Big bad");
+        error.Context("Failed to create quad renderer");
         throw;
     }
 
