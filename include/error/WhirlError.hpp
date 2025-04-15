@@ -15,6 +15,13 @@ public:
         m_context.push_back(message);
     }
 
+    template <typename... Args>
+    explicit WhirlError(const std::string& message, Args&&... args)
+    {
+        m_context.reserve(4);
+        m_context.push_back(fmt::format(message, std::forward<Args>(args)...));
+    }
+
     void Context(const std::string& error)
     {
         m_context.push_back(error);
