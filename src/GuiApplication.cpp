@@ -62,8 +62,10 @@ int GuiApplication::Launch()
     catch (WhirlError& error)
     {
         auto errors = error.Get();
-        for (const auto& error : errors)
-            WHIRL_ERROR(error);
+        for (const auto& entry : errors)
+        {
+            WHIRL_ERROR(entry);
+        }
 
         WHIRL_FATAL("Failed to create a renderer");
         return 1;
