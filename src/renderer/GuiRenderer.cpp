@@ -46,6 +46,7 @@ GuiRenderer::~GuiRenderer()
 
 void GuiRenderer::Submit()
 {
+    // TODO: Abstract all this stuff away into a proper renderer abstraction
     std::vector<QuadVertex> quadVertices;
     quadVertices.reserve(4 * m_quadList.size());
     std::vector<uint32_t> quadIndices;

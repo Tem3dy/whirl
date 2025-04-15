@@ -33,12 +33,13 @@ public:
         m_context.push_back(fmt::format(fmt::runtime(error), std::forward<Args>(args)...));
     }
 
+    // Consider returning by const ref here
     std::vector<std::string> Get() const
     {
         return m_context;
     }
 
-    // Do not use this function
+    // Do not use this function, use Get()
     const char* what() const noexcept override
     {
         if (m_context.size() > 0)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
 #include <vector>
 #include <initializer_list>
 
@@ -8,9 +9,11 @@
 
 #include "Logger.hpp"
 
+// Always 4 bytes, make this more flexible later on
+constexpr size_t FORMAT_SIZE = 4;
+
 enum class VertexFormat
 {
-    // Always 4 bytes
     INT,
     UINT,
     FLOAT,
@@ -24,6 +27,7 @@ struct VertexAttribute
 
 namespace VertexLayout
 {
+    // Factory method for semantic meaning
     inline std::vector<VertexAttribute> New(const std::initializer_list<VertexAttribute>& attributes)
     {
         return {attributes};
@@ -33,7 +37,7 @@ namespace VertexLayout
     {
         int32_t stride = 0;
         for (const auto& attribute : attributes)
-            stride += 4 * attribute.size;
+            stride += FORMAT_SIZE * attribute.size;
 
         return stride;
     }
@@ -49,7 +53,7 @@ namespace VertexLayout
 
         uint32_t offset = 0;
         for (int i = 0; i < index; i++)
-            offset += 4 * attributes[i].size;
+            offset += FORMAT_SIZE * attributes[i].size;
 
         return offset;
     }
