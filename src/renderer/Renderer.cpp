@@ -21,32 +21,24 @@ Renderer::Renderer()
     }
 
     m_quadList.reserve(64);
-    glGenVertexArrays(1, &m_quadArray);
-    m_quadVertexBuf = std::make_unique<VertexBuffer>();
-    m_quadIndexBuf = std::make_unique<IndexBuffer>();
-
-    glBindVertexArray(m_quadArray);
-    m_quadVertexBuf->Bind();
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(QuadVertex), (const void*) 0);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribIPointer(1, 1, GL_UNSIGNED_INT, sizeof(QuadVertex), (const void*) (2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-    m_quadVertexBuf->Unbind();
+    // clang-format off
+    m_quadArray = std::make_unique<VertexArray>(VertexBuffer(), IndexBuffer(), VertexLayout::New({
+       {
+        .size = 2,
+        .format = VertexFormat::FLOAT,
+       },
+       {
+        .size = 1,
+        .format = VertexFormat::UINT,
+       }
+    }));
+    // clang-format on
     WHIRL_TRACE("Renderer opened successfully");
 }
 
 Renderer::~Renderer()
 {
-    if (m_quadArray != 0)
-    {
-        WHIRL_DEBUG("Deleting vertex array: {}", m_quadArray);
-        glDeleteVertexArrays(1, &m_quadArray);
-    }
-    
+    WHIRL_DEBUG("Clearing quad list");
     m_quadList.clear();
     WHIRL_TRACE("Renderer closed successfully");
 }
@@ -78,20 +70,23 @@ void Renderer::Submit()
         quadIndices.push_back(base + 0);
     }
 
-    glBindVertexArray(m_quadArray);
-    m_quadVertexBuf->Bind();
-    m_quadVertexBuf->Data(quadVertices.data(), quadVertices.size() * sizeof(QuadVertex), DrawMode::DYNAMIC);
+    m_quadArray->Bind();
+    auto& vertexBuf = m_quadArray->GetVertexBuffer();
+    vertexBuf.Bind();
+    vertexBuf.Data(quadVertices.data(), quadVertices.size() * sizeof(QuadVertex), DrawMode::DYNAMIC);
 
-    m_quadIndexBuf->Bind();
-    m_quadIndexBuf->Data(quadIndices.data(), quadIndices.size() * sizeof(uint32_t), DrawMode::DYNAMIC);
+    auto& indexBuf = m_quadArray->GetIndexBuffer();
+    indexBuf.Bind();
+    indexBuf.Data(quadIndices.data(), quadIndices.size() * sizeof(uint32_t), DrawMode::DYNAMIC);
 
     m_quadShader->SetMat4("u_Projection", m_projection);
     m_quadShader->Use();
     glDrawElements(GL_TRIANGLES, quadIndices.size(), GL_UNSIGNED_INT, nullptr);
+    m_quadArray->Unbind();
+    vertexBuf.Unbind();
+    indexBuf.Unbind();
 
-    glBindVertexArray(0);
-    m_quadVertexBuf->Unbind();
-    m_quadIndexBuf->Unbind();
+    // Clear on submit
     m_quadList.clear();
 }
 

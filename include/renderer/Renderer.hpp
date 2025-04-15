@@ -9,6 +9,7 @@
 #include "Shader.hpp"
 #include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"
+#include "VertexArray.hpp"
 
 // Ensure no padding
 #pragma pack(1)
@@ -44,11 +45,8 @@ public:
 private:
     glm::mat4 m_projection;
 
-    // Quads
+    // Quads (abstract this away via a more simplified renderer later)
     std::vector<Quad> m_quadList;
     std::unique_ptr<Shader> m_quadShader;
-    std::unique_ptr<VertexBuffer> m_quadVertexBuf;
-    std::unique_ptr<IndexBuffer> m_quadIndexBuf;
-    // Make this a std::unique_ptr<VertexArray> later on
-    unsigned int m_quadArray;
+    std::unique_ptr<VertexArray> m_quadArray;
 };
