@@ -11,16 +11,16 @@ public:
     ~Shader();
 
 public:
-    void Use();
+    void Use() const;
 
     // Basic types
-    bool SetBool(const std::string& name, bool value) const;
-    bool SetInt(const std::string& name, int value) const;
-    bool SetUInt(const std::string& name, unsigned int value) const;
-    bool SetFloat(const std::string& name, float value) const;
+    bool SetBool(const std::string& name, bool value);
+    bool SetInt(const std::string& name, int value);
+    bool SetUInt(const std::string& name, unsigned int value);
+    bool SetFloat(const std::string& name, float value);
 
     // Mats
-    bool SetMat4(const std::string& name, const glm::mat4& matrix) const;
+    bool SetMat4(const std::string& name, const glm::mat4& matrix);
 
 private:
     unsigned int m_program = 0;

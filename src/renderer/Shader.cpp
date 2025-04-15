@@ -169,7 +169,7 @@ Shader::~Shader()
     }
 }
 
-void Shader::Use()
+void Shader::Use() const
 {
     if (m_program == 0)
     {
@@ -182,7 +182,7 @@ void Shader::Use()
     glUseProgram(m_program);
 }
 
-bool Shader::SetBool(const std::string& name, bool value) const
+bool Shader::SetBool(const std::string& name, bool value)
 {
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
@@ -195,7 +195,7 @@ bool Shader::SetBool(const std::string& name, bool value) const
     return true;
 }
 
-bool Shader::SetInt(const std::string& name, int value) const
+bool Shader::SetInt(const std::string& name, int value)
 {
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
@@ -208,7 +208,7 @@ bool Shader::SetInt(const std::string& name, int value) const
     return true;
 }
 
-bool Shader::SetUInt(const std::string& name, unsigned int value) const
+bool Shader::SetUInt(const std::string& name, unsigned int value)
 {
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
@@ -221,7 +221,7 @@ bool Shader::SetUInt(const std::string& name, unsigned int value) const
     return true;
 }
 
-bool Shader::SetFloat(const std::string& name, float value) const
+bool Shader::SetFloat(const std::string& name, float value)
 {
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
@@ -234,7 +234,7 @@ bool Shader::SetFloat(const std::string& name, float value) const
     return true;
 }
 
-bool Shader::SetMat4(const std::string& name, const glm::mat4& matrix) const
+bool Shader::SetMat4(const std::string& name, const glm::mat4& matrix)
 {
     int location = glGetUniformLocation(m_program, name.c_str());
     if (location == -1)
