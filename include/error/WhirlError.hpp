@@ -19,7 +19,7 @@ public:
     explicit WhirlError(const std::string& message, Args&&... args)
     {
         m_context.reserve(4);
-        m_context.push_back(fmt::format(message, std::forward<Args>(args)...));
+        m_context.push_back(fmt::format(fmt::runtime(message), std::forward<Args>(args)...));
     }
 
     void Context(const std::string& error)
@@ -30,7 +30,7 @@ public:
     template <typename... Args>
     void Context(const std::string& error, Args&&... args)
     {
-        m_context.push_back(fmt::format(error, std::forward<Args>(args)...));
+        m_context.push_back(fmt::format(fmt::runtime(error), std::forward<Args>(args)...));
     }
 
     std::vector<std::string> Get() const
