@@ -10,7 +10,9 @@
 class VertexArray
 {
 public:
+    VertexArray(const std::vector<VertexAttribute>& layout);
     VertexArray(VertexBuffer&& vertexBuf, IndexBuffer&& indexBuf, const std::vector<VertexAttribute>& layout);
+
     ~VertexArray();
 
     VertexArray(const VertexArray&) = delete;

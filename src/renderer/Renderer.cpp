@@ -22,7 +22,7 @@ Renderer::Renderer()
 
     m_quadList.reserve(64);
     // clang-format off
-    m_quadArray = std::make_unique<VertexArray>(VertexBuffer(), IndexBuffer(), VertexLayout::New({
+    m_quadArray = std::make_unique<VertexArray>(VertexLayout::New({
        {
         .size = 2,
         .format = VertexFormat::FLOAT,

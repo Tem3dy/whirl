@@ -3,6 +3,12 @@
 #include "VertexArray.hpp"
 #include "Logger.hpp"
 
+VertexArray::VertexArray(const std::vector<VertexAttribute>& layout)
+    : VertexArray(VertexBuffer(), IndexBuffer(), layout)
+{
+    WHIRL_DEBUG("Creating vertex array with raw buffers");
+}
+
 VertexArray::VertexArray(VertexBuffer&& vertexBuf, IndexBuffer&& indexBuf, const std::vector<VertexAttribute>& layout)
     : m_vertexBuf(std::make_unique<VertexBuffer>(std::move(vertexBuf))),
       m_indexBuf(std::make_unique<IndexBuffer>(std::move(indexBuf))),
@@ -46,7 +52,7 @@ VertexArray::VertexArray(VertexBuffer&& vertexBuf, IndexBuffer&& indexBuf, const
 
         glEnableVertexAttribArray(i);
     }
-    
+
     glBindVertexArray(0);
     m_vertexBuf->Unbind();
     m_indexBuf->Unbind();
