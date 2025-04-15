@@ -72,7 +72,7 @@ int GuiApplication::Launch()
         glViewport(0, 0, width, height);
 
         // TODO: Figure this out better at some point
-        auto app = static_cast<GuiApplication*>(glfwGetWindowUserPointer(window));
+        auto* app = static_cast<GuiApplication*>(glfwGetWindowUserPointer(window));
         if (app) 
         {
             app->m_mode.width = width;
