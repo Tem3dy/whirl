@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.30)
 
 # Project information
-project(whirl VERSION 0.2.0)
+project(whirl VERSION 0.3.0)
 
 # Ensure OpenGL is installed
 find_package(OpenGL REQUIRED)
