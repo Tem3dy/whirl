@@ -32,6 +32,9 @@ void QuadRenderer::Draw(const Quad& quad)
 
 void QuadRenderer::Submit(const glm::mat4& projection)
 {
+    if (m_quads.empty())
+        return;
+
     m_array->Bind();
     Configure();
     m_shader->Use();
