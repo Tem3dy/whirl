@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "VideoMode.hpp"
-#include "Renderer.hpp"
+#include "GuiRenderer.hpp"
 
 struct GLFWwindow;
 
@@ -18,5 +18,5 @@ public:
 private:
     VideoMode m_mode;
     GLFWwindow* m_window;
-    std::unique_ptr<Renderer> m_renderer;
+    std::unique_ptr<GuiRenderer> m_renderer;
 };

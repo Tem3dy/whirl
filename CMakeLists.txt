@@ -70,7 +70,7 @@ add_library(${PROJECT_NAME} STATIC
     src/GuiApplication.cpp
     
     # Renderer
-    src/renderer/Renderer.cpp
+    src/renderer/GuiRenderer.cpp
     src/renderer/Shader.cpp
     src/renderer/VertexBuffer.cpp
     src/renderer/IndexBuffer.cpp

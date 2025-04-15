@@ -5,10 +5,10 @@
 #include <glad/gl.h>
 
 #include "Math.hpp"
-#include "Renderer.hpp"
+#include "GuiRenderer.hpp"
 #include "Logger.hpp"
 
-Renderer::Renderer()
+GuiRenderer::GuiRenderer()
 {
     try
     {
@@ -36,14 +36,14 @@ Renderer::Renderer()
     WHIRL_TRACE("Renderer opened successfully");
 }
 
-Renderer::~Renderer()
+GuiRenderer::~GuiRenderer()
 {
     WHIRL_DEBUG("Clearing quad list");
     m_quadList.clear();
     WHIRL_TRACE("Renderer closed successfully");
 }
 
-void Renderer::Submit()
+void GuiRenderer::Submit()
 {
     std::vector<QuadVertex> quadVertices;
     quadVertices.reserve(4 * m_quadList.size());
@@ -90,7 +90,7 @@ void Renderer::Submit()
     m_quadList.clear();
 }
 
-void Renderer::DrawQuad(float x, float y, float w, float h, uint32_t color)
+void GuiRenderer::DrawQuad(float x, float y, float w, float h, uint32_t color)
 {
     if (x < 0 || y < 0)
     {
@@ -115,17 +115,17 @@ void Renderer::DrawQuad(float x, float y, float w, float h, uint32_t color)
     m_quadList.emplace_back(x, y, w, h, color);
 }
 
-void Renderer::DrawVLine(float x, float y, float length, float thickness, uint32_t color)
+void GuiRenderer::DrawVLine(float x, float y, float length, float thickness, uint32_t color)
 {
     DrawQuad(x, y, thickness, length, color);
 }
 
-void Renderer::DrawHLine(float x, float y, float length, float thickness, uint32_t color)
+void GuiRenderer::DrawHLine(float x, float y, float length, float thickness, uint32_t color)
 {
     DrawQuad(x, y, length, thickness, color);
 }
 
-void Renderer::Adjust(int width, int height)
+void GuiRenderer::Adjust(int width, int height)
 {
     // Shouldn't happen, but just in case
     if (width <= 0 || height <= 0)

@@ -28,11 +28,11 @@ struct QuadVertex
 #pragma pack()
 // Reset padding
 
-class Renderer
+class GuiRenderer
 {
 public:
-    Renderer();
-    ~Renderer();
+    GuiRenderer();
+    ~GuiRenderer();
     
 public:
     void DrawQuad(float x, float y, float w, float h, uint32_t color = Color::White());

@@ -56,7 +56,7 @@ int GuiApplication::Launch()
 
     try
     {
-        m_renderer = std::make_unique<Renderer>();
+        m_renderer = std::make_unique<GuiRenderer>();
     }
     catch (const std::runtime_error& error)
     {
