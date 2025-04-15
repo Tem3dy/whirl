@@ -70,11 +70,12 @@ add_library(${PROJECT_NAME} STATIC
     src/GuiApplication.cpp
     
     # Renderer
-    src/renderer/GuiRenderer.cpp
     src/renderer/Shader.cpp
     src/renderer/VertexBuffer.cpp
     src/renderer/IndexBuffer.cpp
     src/renderer/VertexArray.cpp
+    src/renderer/GuiRenderer.cpp
+    src/renderer/QuadRenderer.cpp
 )
 
 # Compile with C++ 20

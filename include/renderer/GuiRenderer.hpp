@@ -6,27 +6,7 @@
 
 #include "Math.hpp"
 #include "Color.hpp"
-#include "Shader.hpp"
-#include "VertexBuffer.hpp"
-#include "IndexBuffer.hpp"
-#include "VertexArray.hpp"
-
-// Ensure no padding
-#pragma pack(1)
-struct Quad
-{
-    float x, y;
-    float w, h;
-    uint32_t color;
-};
-
-struct QuadVertex
-{
-    float x, y;
-    uint32_t color;
-};
-#pragma pack()
-// Reset padding
+#include "QuadRenderer.hpp"
 
 class GuiRenderer
 {
@@ -45,8 +25,6 @@ public:
 private:
     glm::mat4 m_projection;
 
-    // Quads (abstract this away via a more simplified renderer later)
-    std::vector<Quad> m_quadList;
-    std::unique_ptr<Shader> m_quadShader;
-    std::unique_ptr<VertexArray> m_quadArray;
+    // Renderers
+    std::unique_ptr<QuadRenderer> m_quadRenderer;
 };
