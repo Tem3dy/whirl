@@ -7,6 +7,7 @@
 #include "Math.hpp"
 #include "GuiRenderer.hpp"
 #include "Logger.hpp"
+#include "WhirlError.hpp"
 
 GuiRenderer::GuiRenderer()
 {
@@ -14,10 +15,10 @@ GuiRenderer::GuiRenderer()
     {
         m_quadShader = std::make_unique<Shader>("assets/shaders/quad.wsh");
     }
-    catch (const std::runtime_error& error)
+    catch (WhirlError& error)
     {
-        WHIRL_ERROR("{}", error.what());
-        throw std::runtime_error(fmt::format("Failed to load renderer shaders"));
+        error.Context("Failed to load renderer shaders");
+        throw;
     }
 
     m_quadList.reserve(64);

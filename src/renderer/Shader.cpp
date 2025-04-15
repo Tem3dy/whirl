@@ -8,6 +8,7 @@
 
 #include "Shader.hpp"
 #include "Logger.hpp"
+#include "WhirlError.hpp"
 
 static void Compile(unsigned int shader, const char* source)
 {
@@ -24,7 +25,7 @@ static void Compile(unsigned int shader, const char* source)
 
         std::vector<char> log(size);
         glGetShaderInfoLog(shader, size, nullptr, log.data());
-        throw std::runtime_error(fmt::format("Failed to compile shader: \n{}", log.data()));
+        throw WhirlError("Failed to compile shader: \n{}", log.data());
     }
     else
     {
@@ -48,7 +49,7 @@ static void Link(unsigned int program, unsigned int vShader, unsigned int fShade
 
         std::vector<char> log(size);
         glGetProgramInfoLog(program, size, nullptr, log.data());
-        throw std::runtime_error(fmt::format("Failed to link shader program: \n{}", log.data()));
+        throw WhirlError("Failed to link shader program: \n{}", log.data());
     }
     else
     {
@@ -66,7 +67,7 @@ Shader::Shader(const std::string& path)
     WHIRL_TRACE("Reading shader file: {}", path);
     std::ifstream shaderFile(path);
     if (!shaderFile)
-        throw std::runtime_error(fmt::format("Failed to open shader file: {}", path));
+        throw WhirlError("Failed to open shader file: {}", path);
 
     std::string line;
     std::string vShaderCode;
@@ -79,7 +80,7 @@ Shader::Shader(const std::string& path)
         if (line.find("#shader") != std::string::npos)
         {
             if (line.find("vertex") == std::string::npos && line.find("fragment") == std::string::npos)
-                throw std::runtime_error(fmt::format("Unknown shader tag found in: {}, -> {} <-", path, line));
+                throw WhirlError("Unknown shader tag found in: {}, -> {} <-", path, line);
         }
 
         if (line.find("#shader vertex") != std::string::npos)
@@ -93,7 +94,7 @@ Shader::Shader(const std::string& path)
             }
 
             if (readingVertex)
-                throw std::runtime_error(fmt::format("Unexpected shader tag found in: {}, -> {} <-", path, line));
+                throw WhirlError("Unexpected shader tag found in: {}, -> {} <-", path, line);
 
             WHIRL_TRACE("Reading vertex shader source...");
             readingVertex = true;
@@ -111,7 +112,7 @@ Shader::Shader(const std::string& path)
             }
 
             if (readingFragment)
-                throw std::runtime_error(fmt::format("Unexpected shader tag found in: {}, -> {} <-", path, line));
+                throw WhirlError("Unknown shader tag found in: {}, -> {} <-", path, line);
 
             WHIRL_TRACE("Reading fragment shader source...");
             readingFragment = true;
@@ -136,7 +137,7 @@ Shader::Shader(const std::string& path)
     }
 
     if (vShaderCode.empty() || fShaderCode.empty())
-        throw std::runtime_error(fmt::format("Missing shader code in: {}", path));
+        throw WhirlError("Missing shader code in: {}", path);
 
     WHIRL_TRACE("Shader source loaded successfully from file: {}", path);
     shaderFile.close();
@@ -153,10 +154,10 @@ Shader::Shader(const std::string& path)
         Link(m_program, vShader, fShader);
         WHIRL_TRACE("Shader constructed successfully from file: {}", path);
     }
-    catch (const std::runtime_error& error)
+    catch (WhirlError& error)
     {
-        WHIRL_ERROR("{}", error.what());
-        throw std::runtime_error(fmt::format("Failed to construct shader"));
+        error.Context("Failed to construct shader");
+        throw;
     }
 }
 

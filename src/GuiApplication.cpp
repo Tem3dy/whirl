@@ -3,6 +3,7 @@
 
 #include "GuiApplication.hpp"
 #include "Logger.hpp"
+#include "WhirlError.hpp"
 
 GuiApplication::GuiApplication(const VideoMode& mode)
     : m_mode(mode),
@@ -58,10 +59,13 @@ int GuiApplication::Launch()
     {
         m_renderer = std::make_unique<GuiRenderer>();
     }
-    catch (const std::runtime_error& error)
+    catch (WhirlError& error)
     {
+        auto errors = error.Get();
+        for (const auto& error : errors)
+            WHIRL_ERROR(error);
+
         WHIRL_FATAL("Failed to create a renderer");
-        WHIRL_FATAL("{}", error.what());
         return 1;
     }
 
