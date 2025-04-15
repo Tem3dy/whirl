@@ -88,7 +88,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     include/
     include/math/
     include/renderer/
-    include/logger
+    include/logger/
+    include/error/
     
     # GLM include path
     ${glm_SOURCE_DIR}
