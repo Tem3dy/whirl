@@ -21,7 +21,7 @@ public:
         }
         catch (WhirlError& error)
         {
-            error.Context("Failed to load a renderer shader");
+            error.Context("Failed to load renderer resources");
             throw;
         }
     }
