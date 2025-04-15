@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "VideoMode.hpp"
 #include "Renderer.hpp"
 
@@ -15,6 +17,6 @@ public:
 
 private:
     VideoMode m_mode;
-    Renderer m_renderer;
     GLFWwindow* m_window;
+    std::unique_ptr<Renderer> m_renderer;
 };

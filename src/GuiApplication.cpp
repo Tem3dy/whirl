@@ -20,7 +20,7 @@ int GuiApplication::Launch()
 
     if (!glfwInit())
     {
-        WHIRL_ERROR("Failed to initialize GLFW");
+        WHIRL_FATAL("Failed to initialize GLFW");
         return 1;
     }
 
@@ -31,7 +31,7 @@ int GuiApplication::Launch()
     m_window = glfwCreateWindow(m_mode.width, m_mode.height, m_mode.title.c_str(), 0, 0);
     if (!m_window)
     {
-        WHIRL_ERROR("Failed to create a window");
+        WHIRL_FATAL("Failed to create a window");
         glfwTerminate();
         return 1;
     }
@@ -43,7 +43,7 @@ int GuiApplication::Launch()
     // Load GLAD
     if (!gladLoadGL(glfwGetProcAddress))
     {
-        WHIRL_ERROR("Failed to initialize GLAD");
+        WHIRL_FATAL("Failed to initialize GLAD");
         glfwDestroyWindow(m_window);
         glfwTerminate();
         return 1;
@@ -53,6 +53,17 @@ int GuiApplication::Launch()
     WHIRL_INFO("GLFW Version: {}", glfwGetVersionString());
     // Set up window user pointer
     glfwSetWindowUserPointer(m_window, this);
+
+    try
+    {
+        m_renderer = std::make_unique<Renderer>();
+    }
+    catch (const std::runtime_error& error)
+    {
+        WHIRL_FATAL("Failed to create a renderer");
+        WHIRL_FATAL("{}", error.what());
+        return 1;
+    }
 
     // Set up viewport
     glViewport(0, 0, m_mode.width, m_mode.height);
@@ -66,13 +77,12 @@ int GuiApplication::Launch()
         {
             app->m_mode.width = width;
             app->m_mode.height = height;
-            app->m_renderer.Adjust(width, height);   
+            app->m_renderer->Adjust(width, height);   
         }
     });
     // clang-format on
 
-    m_renderer.Open();
-    m_renderer.Adjust(m_mode.width, m_mode.height);
+    m_renderer->Adjust(m_mode.width, m_mode.height);
     while (!glfwWindowShouldClose(m_window))
     {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -84,7 +94,6 @@ int GuiApplication::Launch()
         glfwPollEvents();
     }
 
-    m_renderer.Close();
     glfwDestroyWindow(m_window);
     glfwTerminate();
     return 0;

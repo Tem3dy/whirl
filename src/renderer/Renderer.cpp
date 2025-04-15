@@ -1,30 +1,26 @@
-#include <glad/gl.h>
-
 #include <cstdint>
 #include <vector>
+#include <stdexcept>
+
+#include <glad/gl.h>
 
 #include "Math.hpp"
 #include "Renderer.hpp"
 #include "Logger.hpp"
 
-bool Renderer::Open()
+Renderer::Renderer()
 {
-    if (m_isOpen)
+    try
     {
-        WHIRL_ERROR("Tried to open a renderer that's already open");
-        return false;
+        m_quadShader = std::make_unique<Shader>("assets/shaders/quad.wsh");
+    }
+    catch (const std::runtime_error& error)
+    {
+        WHIRL_ERROR("{}", error.what());
+        throw std::runtime_error(fmt::format("Failed to load renderer shaders"));
     }
 
-    if (!m_quadShader.Load("assets/shaders/quad.wsh"))
-    {
-        WHIRL_ERROR("Failed to load the quad shader");
-        return false;
-    }
-
-    m_isOpen = true;
     m_quadList.reserve(64);
-
-    // Initialize OpenGL resources
     glGenVertexArrays(1, &m_quadArray);
     m_quadVertexBuf = std::make_unique<VertexBuffer>();
     m_quadIndexBuf = std::make_unique<IndexBuffer>();
@@ -40,36 +36,23 @@ bool Renderer::Open()
 
     glBindVertexArray(0);
     m_quadVertexBuf->Unbind();
-
-    WHIRL_INFO("Renderer opened successfully");
-    return true;
+    WHIRL_TRACE("Renderer opened successfully");
 }
 
-bool Renderer::Close()
+Renderer::~Renderer()
 {
-    if (!m_isOpen)
+    if (m_quadArray != 0)
     {
-        WHIRL_ERROR("Tried to close a renderer that's already closed");
-        return false;
+        WHIRL_DEBUG("Deleting vertex array: {}", m_quadArray);
+        glDeleteVertexArrays(1, &m_quadArray);
     }
-
-    m_isOpen = false;
-    // Delete OpenGL resources
-    glDeleteVertexArrays(1, &m_quadArray);
+    
     m_quadList.clear();
-
-    WHIRL_INFO("Renderer closed successfully");
-    return true;
+    WHIRL_TRACE("Renderer closed successfully");
 }
 
-bool Renderer::Submit()
+void Renderer::Submit()
 {
-    if (!m_isOpen)
-    {
-        WHIRL_ERROR("Tried to submit to a closed renderer");
-        return false;
-    }
-
     std::vector<QuadVertex> quadVertices;
     quadVertices.reserve(4 * m_quadList.size());
     std::vector<uint32_t> quadIndices;
@@ -102,25 +85,18 @@ bool Renderer::Submit()
     m_quadIndexBuf->Bind();
     m_quadIndexBuf->Data(quadIndices.data(), quadIndices.size() * sizeof(uint32_t), DrawMode::DYNAMIC);
 
-    m_quadShader.SetMat4("u_Projection", m_projection);
-    m_quadShader.Use();
+    m_quadShader->SetMat4("u_Projection", m_projection);
+    m_quadShader->Use();
     glDrawElements(GL_TRIANGLES, quadIndices.size(), GL_UNSIGNED_INT, nullptr);
 
     glBindVertexArray(0);
     m_quadVertexBuf->Unbind();
     m_quadIndexBuf->Unbind();
     m_quadList.clear();
-    return true;
 }
 
 void Renderer::DrawQuad(float x, float y, float w, float h, uint32_t color)
 {
-    if (!m_isOpen)
-    {
-        WHIRL_ERROR("Tried to draw a quad with a closed renderer");
-        return;
-    }
-
     if (x < 0 || y < 0)
     {
         WHIRL_WARN("Invalid quad coordinates: ({}, {})", x, y);
@@ -163,7 +139,7 @@ void Renderer::Adjust(int width, int height)
         return;
     }
 
-    WHIRL_INFO("Adjusting renderer: ({}, {})", width, height);
+    WHIRL_DEBUG("Adjusting renderer: ({}, {})", width, height);
     // clang-format off
     m_projection = glm::ortho(
         0.0f,

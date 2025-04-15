@@ -1,15 +1,17 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <stdexcept>
 
 #include <glad/gl.h>
+#include <fmt/core.h>
 
 #include "Shader.hpp"
 #include "Logger.hpp"
 
-static bool Compile(unsigned int shader, const char* source)
+static void Compile(unsigned int shader, const char* source)
 {
-    WHIRL_INFO("Compiling shader...");
+    WHIRL_TRACE("Compiling shader...");
     glShaderSource(shader, 1, &source, nullptr);
     glCompileShader(shader);
 
@@ -22,50 +24,49 @@ static bool Compile(unsigned int shader, const char* source)
 
         std::vector<char> log(size);
         glGetShaderInfoLog(shader, size, nullptr, log.data());
-
-        WHIRL_ERROR("Failed to compile shader: \n", log.data());
-        return false;
+        throw std::runtime_error(fmt::format("Failed to compile shader: \n{}", log.data()));
     }
-
-    return true;
+    else
+    {
+        WHIRL_TRACE("Shader compiled");
+    }
 }
 
-static bool Link(unsigned int program, unsigned int vShader, unsigned int fShader)
+static void Link(unsigned int program, unsigned int vShader, unsigned int fShader)
 {
-    WHIRL_INFO("Linking shaders...");
+    WHIRL_TRACE("Linking shaders...");
     glAttachShader(program, vShader);
     glAttachShader(program, fShader);
     glLinkProgram(program);
-    
-    int linkResult;
-    glGetProgramiv(program, GL_LINK_STATUS, &linkResult);
-    if (!linkResult)
+
+    int result;
+    glGetProgramiv(program, GL_LINK_STATUS, &result);
+    if (!result)
     {
         int size;
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &size);
-        
+
         std::vector<char> log(size);
         glGetProgramInfoLog(program, size, nullptr, log.data());
-
-        WHIRL_ERROR("Failed to link shader program: \n", log.data());
-        return false;
+        throw std::runtime_error(fmt::format("Failed to link shader program: \n{}", log.data()));
+    }
+    else
+    {
+        WHIRL_TRACE("Shaders linked");
+        glValidateProgram(program);
     }
 
-    glValidateProgram(program);
     glDeleteShader(vShader);
     glDeleteShader(fShader);
-    return true;
+    WHIRL_TRACE("Shaders deleted");
 }
 
-bool Shader::Load(const std::string& path)
+Shader::Shader(const std::string& path)
 {
-    WHIRL_INFO("Reading shader file: {}", path);
+    WHIRL_TRACE("Reading shader file: {}", path);
     std::ifstream shaderFile(path);
     if (!shaderFile)
-    {
-        WHIRL_ERROR("Failed to open shader file: {}", path);
-        return false;
-    }
+        throw std::runtime_error(fmt::format("Failed to open shader file: {}", path));
 
     std::string line;
     std::string vShaderCode;
@@ -78,31 +79,23 @@ bool Shader::Load(const std::string& path)
         if (line.find("#shader") != std::string::npos)
         {
             if (line.find("vertex") == std::string::npos && line.find("fragment") == std::string::npos)
-            {
-                WHIRL_ERROR("Unknown shader tag found in: {}", path);
-                WHIRL_ERROR("-> {} <-", line);
-                return false;
-            }
+                throw std::runtime_error(fmt::format("Unknown shader tag found in: {}, -> {} <-", path, line));
         }
 
         if (line.find("#shader vertex") != std::string::npos)
         {
             if (readingFragment)
             {
-                WHIRL_INFO("Reading vertex shader source...");
+                WHIRL_TRACE("Reading vertex shader source...");
                 readingFragment = false;
                 readingVertex = true;
                 continue;
             }
 
             if (readingVertex)
-            {
-                WHIRL_ERROR("Unexpected shader tag found in: {}", path);
-                WHIRL_ERROR("-> {} <-", line);
-                return false;
-            }
+                throw std::runtime_error(fmt::format("Unexpected shader tag found in: {}, -> {} <-", path, line));
 
-            WHIRL_INFO("Reading vertex shader source...");
+            WHIRL_TRACE("Reading vertex shader source...");
             readingVertex = true;
             continue;
         }
@@ -111,20 +104,16 @@ bool Shader::Load(const std::string& path)
         {
             if (readingVertex)
             {
-                WHIRL_INFO("Reading fragment shader source...");
+                WHIRL_TRACE("Reading fragment shader source...");
                 readingVertex = false;
                 readingFragment = true;
                 continue;
             }
 
             if (readingFragment)
-            {
-                WHIRL_ERROR("Unexpected shader tag found in: {}", path);
-                WHIRL_ERROR("-> {} <-", line);
-                return false;
-            }
+                throw std::runtime_error(fmt::format("Unexpected shader tag found in: {}, -> {} <-", path, line));
 
-            WHIRL_INFO("Reading fragment shader source...");
+            WHIRL_TRACE("Reading fragment shader source...");
             readingFragment = true;
             continue;
         }
@@ -141,18 +130,15 @@ bool Shader::Load(const std::string& path)
         {
             if (!line.empty())
                 fShaderCode.append(line + "\n");
-            
+
             continue;
         }
     }
 
     if (vShaderCode.empty() || fShaderCode.empty())
-    {
-        WHIRL_ERROR("Missing shader code in: {}", path);
-        return false;
-    }
+        throw std::runtime_error(fmt::format("Missing shader code in: {}", path));
 
-    WHIRL_INFO("Shader source loaded successfully from file: {}", path);
+    WHIRL_TRACE("Shader source loaded successfully from file: {}", path);
     shaderFile.close();
 
     // Pass shaders to OpenGL
@@ -160,39 +146,40 @@ bool Shader::Load(const std::string& path)
     unsigned int vShader = glCreateShader(GL_VERTEX_SHADER);
     unsigned int fShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-    if (!Compile(vShader, vShaderCode.c_str()))
-        return false;
-    if (!Compile(fShader, fShaderCode.c_str()))
-        return false;
+    try
+    {
+        Compile(vShader, vShaderCode.c_str());
+        Compile(fShader, fShaderCode.c_str());
+        Link(m_program, vShader, fShader);
+        WHIRL_TRACE("Shader constructed successfully from file: {}", path);
+    }
+    catch (const std::runtime_error& error)
+    {
+        WHIRL_ERROR("{}", error.what());
+        throw std::runtime_error(fmt::format("Failed to construct shader"));
+    }
+}
 
-    if (!Link(m_program, vShader, fShader))
-        return false;
-    
-    WHIRL_INFO("Shader constructed successfully from file: {}", path);
-    return true;
+Shader::~Shader()
+{
+    if (m_program != 0)
+    {
+        WHIRL_DEBUG("Deleting shader program: {}", m_program);
+        glDeleteProgram(m_program);
+    }
 }
 
 void Shader::Use()
 {
     if (m_program == 0)
     {
+        // Consider throwing an exception here too
         WHIRL_ERROR("Tried to use an invalid shader");
         return;
     }
 
     // Use shader
     glUseProgram(m_program);
-}
-
-Shader::Shader()
-{
-    m_program = 0;
-}
-
-Shader::~Shader()
-{
-    if (m_program != 0)
-        glDeleteProgram(m_program);
 }
 
 bool Shader::SetBool(const std::string& name, bool value) const

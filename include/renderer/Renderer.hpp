@@ -30,23 +30,23 @@ struct QuadVertex
 class Renderer
 {
 public:
-    bool Open();
-    bool Close();
-    bool Submit();
-
+    Renderer();
+    ~Renderer();
+    
+public:
     void DrawQuad(float x, float y, float w, float h, uint32_t color = Color::White());
     void DrawVLine(float x, float y, float length, float thickness, uint32_t color = Color::White());
     void DrawHLine(float x, float y, float length, float thickness, uint32_t color = Color::White());
-    
+    void Submit();
+
     void Adjust(int width, int height);
 
 private:
-    bool m_isOpen = false;
     glm::mat4 m_projection;
 
     // Quads
-    Shader m_quadShader;
     std::vector<Quad> m_quadList;
+    std::unique_ptr<Shader> m_quadShader;
     std::unique_ptr<VertexBuffer> m_quadVertexBuf;
     std::unique_ptr<IndexBuffer> m_quadIndexBuf;
     // Make this a std::unique_ptr<VertexArray> later on

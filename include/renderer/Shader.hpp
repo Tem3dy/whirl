@@ -7,11 +7,10 @@
 class Shader
 {
 public:
-    Shader();
+    Shader(const std::string& path);
     ~Shader();
 
 public:
-    bool Load(const std::string& path);
     void Use();
 
     // Basic types
@@ -24,5 +23,5 @@ public:
     bool SetMat4(const std::string& name, const glm::mat4& matrix) const;
 
 private:
-    unsigned int m_program;
+    unsigned int m_program = 0;
 };
