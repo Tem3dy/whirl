@@ -39,7 +39,7 @@ void QuadRenderer::Submit(const glm::mat4& projection)
     Configure();
     m_shader->Use();
     m_shader->SetMat4("u_Projection", projection);
-    glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, m_count, GL_UNSIGNED_INT, nullptr);
     m_array->Unbind();
     m_array->GetVertexBuffer().Unbind();
     m_array->GetIndexBuffer().Unbind();
@@ -85,5 +85,5 @@ void QuadRenderer::Configure()
     indexBuf.Bind();
     indexBuf.Data(indices.data(), indices.size() * sizeof(uint32_t), DrawMode::DYNAMIC);
 
-    count = indices.size();
+    m_count = indices.size();
 }

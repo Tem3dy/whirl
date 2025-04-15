@@ -38,5 +38,5 @@ protected:
 protected:
     std::unique_ptr<Shader> m_shader;
     std::unique_ptr<VertexArray> m_array;
-    uint32_t count;
+    uint32_t m_count;
 };
