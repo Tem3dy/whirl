@@ -32,4 +32,6 @@ protected:
 
 private:
     std::vector<Quad> m_quads;
+    std::vector<QuadVertex> m_vertices;
+    std::vector<uint32_t> m_indices;
 };
