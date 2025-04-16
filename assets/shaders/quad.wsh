@@ -1,31 +1,31 @@
 #shader vertex
 #version 450 core
 
-layout (location = 0) in vec2 a_Pos;
-layout (location = 1) in uint a_Col;
+layout (location = 0) in vec2 a_position;
+layout (location = 1) in uint a_color;
 
-uniform mat4 u_Projection;
+uniform mat4 u_projection;
 
-out vec4 p_Col;
+out vec4 p_color;
 
 void main()
 {
-    gl_Position = u_Projection * vec4(a_Pos, 0.0, 1.0);
-    float r = float(((a_Col >> 24) & 0xff)) / 255.0;
-    float g = float(((a_Col >> 16) & 0xff)) / 255.0;
-    float b = float(((a_Col >>  8) & 0xff)) / 255.0;
-    float a = float(((a_Col >>  0) & 0xff)) / 255.0;
+    gl_Position = u_projection * vec4(a_position, 0.0, 1.0);
+    float r = float(((a_color >> 24) & 0xff)) / 255.0;
+    float g = float(((a_color >> 16) & 0xff)) / 255.0;
+    float b = float(((a_color >>  8) & 0xff)) / 255.0;
+    float a = float(((a_color >>  0) & 0xff)) / 255.0;
     
-    p_Col = vec4(r, g, b, a);
+    p_color = vec4(r, g, b, a);
 }
 
 #shader fragment
 #version 450 core
 
-in  vec4 p_Col;
-out vec4 o_Col;
+in vec4 p_color;
+out vec4 o_color;
 
 void main()
 {
-    o_Col = p_Col;
+    o_color = p_color;
 }

@@ -43,7 +43,7 @@ void QuadRenderer::Submit(const glm::mat4& projection)
     m_array->Bind();
     Configure();
     m_shader->Use();
-    m_shader->SetMat4("u_Projection", projection);
+    m_shader->SetMat4("u_projection", projection);
     glDrawElements(GL_TRIANGLES, m_count, GL_UNSIGNED_INT, nullptr);
     m_array->Unbind();
     m_array->GetVertexBuffer().Unbind();
