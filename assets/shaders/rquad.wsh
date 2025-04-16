@@ -14,7 +14,7 @@ out vec4 p_color;
 
 void main()
 {
-    gl_Position = u_Projection * vec4(a_position, 0.0, 1.0);
+    gl_Position = u_projection * vec4(a_position, 0.0, 1.0);
     float r = float(((a_color >> 24) & 0xff)) / 255.0;
     float g = float(((a_color >> 16) & 0xff)) / 255.0;
     float b = float(((a_color >>  8) & 0xff)) / 255.0;
