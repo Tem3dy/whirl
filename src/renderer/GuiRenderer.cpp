@@ -16,12 +16,12 @@ GuiRenderer::GuiRenderer()
         // clang-format off
         m_quadRenderer = std::make_unique<QuadRenderer>("assets/shaders/quad.wsh", VertexLayout::New({
             {
-             .size = 2,
-             .format = VertexFormat::FLOAT,
+                .size = 2,
+                .format = VertexFormat::FLOAT,
             },
             {
-             .size = 1,
-             .format = VertexFormat::UINT,
+                .size = 1,
+                .format = VertexFormat::UINT,
             }
         }));
         // clang-format on
