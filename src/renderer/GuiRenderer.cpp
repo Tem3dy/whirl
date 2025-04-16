@@ -24,6 +24,24 @@ GuiRenderer::GuiRenderer()
                 .format = VertexFormat::UINT,
             }
         }));
+        m_roundedQuadRenderer = std::make_unique<RoundedQuadRenderer>("assets/shaders/rquad.wsh", VertexLayout::New({
+            {
+                .size = 2,
+                .format = VertexFormat::FLOAT,
+            },
+            {
+                .size = 2,
+                .format = VertexFormat::FLOAT,
+            },
+            {
+                .size = 1,
+                .format = VertexFormat::FLOAT,
+            },
+            {
+                .size = 1,
+                .format = VertexFormat::UINT,
+            }
+        }));
         // clang-format on
     }
     catch (WhirlError& error)
@@ -40,11 +58,6 @@ GuiRenderer::~GuiRenderer()
     WHIRL_TRACE("Renderer closed successfully");
 }
 
-void GuiRenderer::Submit()
-{
-    m_quadRenderer->Submit(m_projection);
-}
-
 void GuiRenderer::DrawQuad(float x, float y, float w, float h, uint32_t color)
 {
     m_quadRenderer->Draw({x, y, w, h, color});
@@ -58,6 +71,17 @@ void GuiRenderer::DrawVLine(float x, float y, float length, float thickness, uin
 void GuiRenderer::DrawHLine(float x, float y, float length, float thickness, uint32_t color)
 {
     DrawQuad(x, y, length, thickness, color);
+}
+
+void GuiRenderer::DrawRoundedQuad(float x, float y, float w, float h, float radius, uint32_t color)
+{
+    m_roundedQuadRenderer->Draw({x, y, w, h, radius, color});
+}
+
+void GuiRenderer::Submit()
+{
+    m_quadRenderer->Submit(m_projection);
+    m_roundedQuadRenderer->Submit(m_projection);
 }
 
 void GuiRenderer::Adjust(int width, int height)

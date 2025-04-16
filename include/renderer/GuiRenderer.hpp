@@ -7,6 +7,7 @@
 #include "Math.hpp"
 #include "Color.hpp"
 #include "QuadRenderer.hpp"
+#include "RoundedQuadRenderer.hpp"
 
 class GuiRenderer
 {
@@ -18,6 +19,9 @@ public:
     void DrawQuad(float x, float y, float w, float h, uint32_t color = Color::White());
     void DrawVLine(float x, float y, float length, float thickness, uint32_t color = Color::White());
     void DrawHLine(float x, float y, float length, float thickness, uint32_t color = Color::White());
+
+    void DrawRoundedQuad(float x, float y, float w, float h, float radius, uint32_t color = Color::White()); 
+
     void Submit();
 
     void Adjust(int width, int height);
@@ -27,4 +31,5 @@ private:
 
     // Renderers
     std::unique_ptr<QuadRenderer> m_quadRenderer;
+    std::unique_ptr<RoundedQuadRenderer> m_roundedQuadRenderer;
 };

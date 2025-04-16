@@ -76,6 +76,7 @@ add_library(${PROJECT_NAME} STATIC
     src/renderer/VertexArray.cpp
     src/renderer/GuiRenderer.cpp
     src/renderer/QuadRenderer.cpp
+    src/renderer/RoundedQuadRenderer.cpp
 )
 
 # Compile with C++ 20
