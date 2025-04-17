@@ -7,7 +7,7 @@
 class Shader
 {
 public:
-    Shader(const std::string& path);
+    explicit Shader(const std::string& path);
     ~Shader();
 
 public:
