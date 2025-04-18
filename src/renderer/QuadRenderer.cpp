@@ -35,29 +35,6 @@ void QuadRenderer::Submit(const Quad& quad)
     m_quads.push_back(quad);
 }
 
-void QuadRenderer::Draw(const glm::mat4& projection)
-{
-    if (m_quads.empty())
-        return;
-
-    m_array->Bind();
-    Configure();
-    m_shader->Use();
-    m_shader->SetMat4("u_projection", projection);
-    glDrawElements(GL_TRIANGLES, m_count, GL_UNSIGNED_INT, nullptr);
-    m_array->Unbind();
-    m_array->GetVertexBuffer().Unbind();
-    m_array->GetIndexBuffer().Unbind();
-    m_quads.clear();
-
-    // Make this more robust
-    auto error = 0;
-    while ((error = glGetError()) != GL_NO_ERROR)
-    {
-        WHIRL_ERROR("GL ERROR: {}", error);
-    }
-}
-
 void QuadRenderer::Configure()
 {
     m_vertices.clear();
@@ -89,4 +66,14 @@ void QuadRenderer::Configure()
     indexBuf.Data(m_indices.data(), m_indices.size() * sizeof(uint32_t), DrawMode::DYNAMIC);
 
     m_count = m_indices.size();
+}
+
+bool QuadRenderer::CanRender()
+{
+    return !m_quads.empty();
+}
+
+void QuadRenderer::Reset()
+{
+    m_quads.clear();
 }

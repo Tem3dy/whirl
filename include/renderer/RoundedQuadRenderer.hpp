@@ -20,7 +20,7 @@ struct RoundedQuadVertex
     uint32_t color;
 };
 
-class RoundedQuadRenderer : Renderer<RoundedQuad>
+class RoundedQuadRenderer : public Renderer<RoundedQuad>
 {
 public:
     RoundedQuadRenderer(const std::string& shaderPath, const std::vector<VertexAttribute>& layout);
@@ -28,11 +28,12 @@ public:
 
 public:
     void Submit(const RoundedQuad& quad) override;
-    void Draw(const glm::mat4& projection) override;
 
 protected:
     void Configure() override;
-    
+    bool CanRender() override;
+    void Reset() override;
+
 private:
     std::vector<RoundedQuad> m_quads;
     std::vector<RoundedQuadVertex> m_vertices;

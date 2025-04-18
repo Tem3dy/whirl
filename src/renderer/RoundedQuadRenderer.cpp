@@ -41,29 +41,6 @@ void RoundedQuadRenderer::Submit(const RoundedQuad& quad)
     m_quads.push_back(quad);
 }
 
-void RoundedQuadRenderer::Draw(const glm::mat4& projection)
-{
-    if (m_quads.empty())
-        return;
-
-    m_array->Bind();
-    Configure();
-    m_shader->Use();
-    m_shader->SetMat4("u_projection", projection);
-    glDrawElements(GL_TRIANGLES, m_count, GL_UNSIGNED_INT, nullptr);
-    m_array->Unbind();
-    m_array->GetVertexBuffer().Unbind();
-    m_array->GetIndexBuffer().Unbind();
-    m_quads.clear();
-
-    // Make this more robust
-    auto error = 0;
-    while ((error = glGetError()) != GL_NO_ERROR)
-    {
-        WHIRL_ERROR("GL ERROR: {}", error);
-    }
-}
-
 void RoundedQuadRenderer::Configure()
 {
     m_vertices.clear();
@@ -121,3 +98,12 @@ void RoundedQuadRenderer::Configure()
     m_count = m_indices.size();
 }
 
+bool RoundedQuadRenderer::CanRender()
+{
+    return !m_quads.empty();
+}
+
+void RoundedQuadRenderer::Reset()
+{
+    return m_quads.clear();
+}

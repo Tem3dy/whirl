@@ -30,10 +30,33 @@ public:
 
 public:
     virtual void Submit(const T& shape) = 0;
-    virtual void Draw(const glm::mat4& projection) = 0;
+    virtual void Draw(const glm::mat4& projection)
+    {
+        if (CanRender())
+        {
+            m_array->Bind();
+            Configure();
+            m_shader->Use();
+            m_shader->SetMat4("u_projection", projection);
+            glDrawElements(GL_TRIANGLES, m_count, GL_UNSIGNED_INT, nullptr);
+            m_array->Unbind();
+            m_array->GetVertexBuffer().Unbind();
+            m_array->GetIndexBuffer().Unbind();
+            Reset();
+    
+            // Make this more robust
+            auto error = 0;
+            while ((error = glGetError()) != GL_NO_ERROR)
+            {
+                WHIRL_ERROR("GL ERROR: {}", error);
+            }
+        }
+    }
 
 protected:
     virtual void Configure() = 0;
+    virtual bool CanRender() = 0;
+    virtual void Reset() = 0;
 
 protected:
     std::unique_ptr<Shader> m_shader;

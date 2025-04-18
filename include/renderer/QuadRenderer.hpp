@@ -25,10 +25,11 @@ public:
 
 public:
     void Submit(const Quad& quad) override;
-    void Draw(const glm::mat4& projection) override;
 
 protected:
     void Configure() override;
+    bool CanRender() override;
+    void Reset() override;
 
 private:
     std::vector<Quad> m_quads;
