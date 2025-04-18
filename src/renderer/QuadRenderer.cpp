@@ -18,7 +18,7 @@ QuadRenderer::~QuadRenderer()
     WHIRL_DEBUG("Deleting quad renderer");
 }
 
-void QuadRenderer::Draw(const Quad& quad)
+void QuadRenderer::Submit(const Quad& quad)
 {
     if (quad.x < 0 || quad.y < 0)
     {
@@ -35,7 +35,7 @@ void QuadRenderer::Draw(const Quad& quad)
     m_quads.push_back(quad);
 }
 
-void QuadRenderer::Submit(const glm::mat4& projection)
+void QuadRenderer::Draw(const glm::mat4& projection)
 {
     if (m_quads.empty())
         return;

@@ -29,8 +29,8 @@ public:
     virtual ~Renderer() = default;
 
 public:
-    virtual void Draw(const T& shape) = 0;
-    virtual void Submit(const glm::mat4& projection) = 0;
+    virtual void Submit(const T& shape) = 0;
+    virtual void Draw(const glm::mat4& projection) = 0;
 
 protected:
     virtual void Configure() = 0;

@@ -19,7 +19,7 @@ RoundedQuadRenderer::~RoundedQuadRenderer()
     WHIRL_DEBUG("Deleting rounded quad renderer");
 }
 
-void RoundedQuadRenderer::Draw(const RoundedQuad& quad)
+void RoundedQuadRenderer::Submit(const RoundedQuad& quad)
 {
     if (quad.x < 0 || quad.y < 0)
     {
@@ -41,7 +41,7 @@ void RoundedQuadRenderer::Draw(const RoundedQuad& quad)
     m_quads.push_back(quad);
 }
 
-void RoundedQuadRenderer::Submit(const glm::mat4& projection)
+void RoundedQuadRenderer::Draw(const glm::mat4& projection)
 {
     if (m_quads.empty())
         return;

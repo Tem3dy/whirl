@@ -27,8 +27,8 @@ public:
     ~RoundedQuadRenderer();
 
 public:
-    void Draw(const RoundedQuad& quad) override;
-    void Submit(const glm::mat4& projection) override;
+    void Submit(const RoundedQuad& quad) override;
+    void Draw(const glm::mat4& projection) override;
 
 protected:
     void Configure() override;

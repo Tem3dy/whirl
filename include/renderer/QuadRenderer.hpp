@@ -24,8 +24,8 @@ public:
     ~QuadRenderer();
 
 public:
-    void Draw(const Quad& quad) override;
-    void Submit(const glm::mat4& projection) override;
+    void Submit(const Quad& quad) override;
+    void Draw(const glm::mat4& projection) override;
 
 protected:
     void Configure() override;
