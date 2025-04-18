@@ -15,7 +15,8 @@ struct RoundedQuad
 struct RoundedQuadVertex
 {
     float x, y;
-    float u, v;
+    float w, h;
+    float rx, ry;
     float radius;
     uint32_t color;
 };
@@ -23,7 +24,7 @@ struct RoundedQuadVertex
 class RoundedQuadRenderer : public Renderer<RoundedQuad>
 {
 public:
-    RoundedQuadRenderer(const std::string& shaderPath, const std::vector<VertexAttribute>& layout);
+    RoundedQuadRenderer();
     ~RoundedQuadRenderer();
 
 public:

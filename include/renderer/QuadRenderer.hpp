@@ -20,7 +20,7 @@ struct QuadVertex
 class QuadRenderer : public Renderer<Quad>
 {
 public:
-    QuadRenderer(const std::string& shaderPath, const std::vector<VertexAttribute>& layout);
+    QuadRenderer();
     ~QuadRenderer();
 
 public:

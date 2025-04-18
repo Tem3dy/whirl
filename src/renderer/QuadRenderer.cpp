@@ -3,8 +3,18 @@
 #include "QuadRenderer.hpp"
 #include "Logger.hpp"
 
-QuadRenderer::QuadRenderer(const std::string& shaderPath, const std::vector<VertexAttribute>& layout)
-    : Renderer<Quad>(shaderPath, layout)
+// clang-format off
+QuadRenderer::QuadRenderer()
+    : Renderer<Quad>("assets/shaders/quad.wsh", VertexLayout::New({
+        {
+            .size = 2,
+            .format = VertexFormat::FLOAT,
+        },
+        {
+            .size = 1,
+            .format = VertexFormat::UINT,
+        }
+    }))
 {
     constexpr size_t BASE_SIZE = 16;
     m_quads.reserve(BASE_SIZE);
@@ -12,6 +22,7 @@ QuadRenderer::QuadRenderer(const std::string& shaderPath, const std::vector<Vert
     m_indices.reserve(BASE_SIZE * 6);
     WHIRL_DEBUG("Creating quad renderer");
 }
+// clang-format on
 
 QuadRenderer::~QuadRenderer()
 {

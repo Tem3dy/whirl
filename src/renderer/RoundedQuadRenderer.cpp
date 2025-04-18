@@ -4,8 +4,30 @@
 #include "Color.hpp"
 #include "Logger.hpp"
 
-RoundedQuadRenderer::RoundedQuadRenderer(const std::string& shaderPath, const std::vector<VertexAttribute>& layout)
-    : Renderer<RoundedQuad>(shaderPath, layout)
+// clang-format off
+RoundedQuadRenderer::RoundedQuadRenderer()
+    : Renderer<RoundedQuad>("assets/shaders/rquad.wsh", VertexLayout::New({
+        {
+            .size = 2,
+            .format = VertexFormat::FLOAT,
+        },
+        {
+            .size = 2,
+            .format = VertexFormat::FLOAT,
+        },
+        {
+            .size = 2,
+            .format = VertexFormat::FLOAT,
+        },
+        {
+            .size = 1,
+            .format = VertexFormat::FLOAT,
+        },
+        {
+            .size = 1,
+            .format = VertexFormat::UINT,
+        }
+    }))
 {
     constexpr size_t BASE_SIZE = 16;
     m_quads.resize(BASE_SIZE);
@@ -13,6 +35,7 @@ RoundedQuadRenderer::RoundedQuadRenderer(const std::string& shaderPath, const st
     m_indices.reserve(BASE_SIZE * 6);
     WHIRL_DEBUG("Creating rounded quad renderer");
 }
+// clang-format on
 
 RoundedQuadRenderer::~RoundedQuadRenderer()
 {
@@ -49,32 +72,28 @@ void RoundedQuadRenderer::Configure()
     {
         const auto& quad = m_quads[i];
         m_vertices.emplace_back(
-            quad.x,
-            quad.y,
-            0.0f, 1.0f,
-            quad.radius,
-            quad.color
+            quad.x, quad.y,
+            quad.w, quad.h,
+            0.0f, quad.h,
+            quad.radius, quad.color
         );
         m_vertices.emplace_back(
-            quad.x,
-            quad.y + quad.h,
+            quad.x, quad.y + quad.h,
+            quad.w, quad.h,
             0.0f, 0.0f,
-            quad.radius,
-            quad.color
+            quad.radius, quad.color
         );
         m_vertices.emplace_back(
-            quad.x + quad.w,
-            quad.y + quad.h,
-            1.0f, 0.0f,
-            quad.radius,
-            quad.color
+            quad.x + quad.w, quad.y + quad.h,
+            quad.w, quad.h,
+            quad.w, 0.0f,
+            quad.radius, quad.color
         );
         m_vertices.emplace_back(
-            quad.x + quad.w,
-            quad.y,
-            1.0f, 1.0f,
-            quad.radius,
-            quad.color
+            quad.x + quad.w, quad.y,
+            quad.w, quad.h,
+            quad.w, quad.h,
+            quad.radius, quad.color
         );
 
         const size_t base = i * 4;

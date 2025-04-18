@@ -13,36 +13,8 @@ GuiRenderer::GuiRenderer()
 {
     try
     {
-        // clang-format off
-        m_quadRenderer = std::make_unique<QuadRenderer>("assets/shaders/quad.wsh", VertexLayout::New({
-            {
-                .size = 2,
-                .format = VertexFormat::FLOAT,
-            },
-            {
-                .size = 1,
-                .format = VertexFormat::UINT,
-            }
-        }));
-        m_roundedQuadRenderer = std::make_unique<RoundedQuadRenderer>("assets/shaders/rquad.wsh", VertexLayout::New({
-            {
-                .size = 2,
-                .format = VertexFormat::FLOAT,
-            },
-            {
-                .size = 2,
-                .format = VertexFormat::FLOAT,
-            },
-            {
-                .size = 1,
-                .format = VertexFormat::FLOAT,
-            },
-            {
-                .size = 1,
-                .format = VertexFormat::UINT,
-            }
-        }));
-        // clang-format on
+        m_quadRenderer = std::make_unique<QuadRenderer>();
+        m_roundedQuadRenderer = std::make_unique<RoundedQuadRenderer>();
     }
     catch (WhirlError& error)
     {
