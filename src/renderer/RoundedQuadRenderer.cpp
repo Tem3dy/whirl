@@ -130,5 +130,5 @@ bool RoundedQuadRenderer::CanRender()
 
 void RoundedQuadRenderer::Reset()
 {
-    return m_quads.clear();
+    m_quads.clear();
 }
