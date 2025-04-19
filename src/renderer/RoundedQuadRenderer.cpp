@@ -6,7 +6,7 @@
 
 // clang-format off
 RoundedQuadRenderer::RoundedQuadRenderer()
-    : Renderer<RoundedQuad>("assets/shaders/rquad.wsh", VertexLayout::New({
+    : Renderer<RoundedQuad>("assets/shaders/rounded_quad.wsh", VertexLayout::New({
         {
             .size = 2,
             .format = VertexFormat::FLOAT,
