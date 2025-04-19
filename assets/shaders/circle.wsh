@@ -1,0 +1,49 @@
+#shader vertex
+#version 450 core
+layout (location = 0) in vec2  a_position;
+layout (location = 1) in vec2  a_center;
+layout (location = 2) in vec2  a_local;
+layout (location = 3) in float a_radius;
+layout (location = 4) in uint  a_color;
+
+uniform mat4 u_projection;
+
+out vec2  p_center;
+out vec2  p_local;
+out float p_radius;
+out vec4  p_color;
+
+void main()
+{
+    gl_Position = u_projection * vec4(a_position, 0.0, 1.0);
+    p_center = a_center;
+    p_local = a_local;
+    p_radius = a_radius;
+    p_color = vec4(
+        float((a_color >> 24) & 0xFF) / 255.0,
+        float((a_color >> 16) & 0xFF) / 255.0,
+        float((a_color >>  8) & 0xFF) / 255.0,
+        float((a_color >>  0) & 0xFF) / 255.0
+    );
+}
+
+#shader fragment
+#version 450 core
+
+in vec2  p_center;
+in vec2  p_local;
+in float p_radius;
+in vec4  p_color;
+
+out vec4 color;
+
+void main()
+{
+    float dist = length(p_center - p_local);
+    if (dist > p_radius)
+    {
+        discard;
+    }
+
+    color = p_color;
+}

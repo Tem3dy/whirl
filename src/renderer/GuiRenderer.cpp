@@ -15,6 +15,7 @@ GuiRenderer::GuiRenderer()
     {
         m_quadRenderer = std::make_unique<QuadRenderer>();
         m_roundedQuadRenderer = std::make_unique<RoundedQuadRenderer>();
+        m_circleRenderer = std::make_unique<CircleRenderer>();
     }
     catch (WhirlError& error)
     {
@@ -50,10 +51,16 @@ void GuiRenderer::DrawRoundedQuad(float x, float y, float w, float h, float radi
     m_roundedQuadRenderer->Submit({x, y, w, h, radius, color});
 }
 
+void GuiRenderer::DrawCircle(float x, float y, float radius, uint32_t color)
+{
+    m_circleRenderer->Submit({x, y, radius, color});
+}
+
 void GuiRenderer::Submit()
 {
     m_quadRenderer->Draw(m_projection);
     m_roundedQuadRenderer->Draw(m_projection);
+    m_circleRenderer->Draw(m_projection);
 }
 
 void GuiRenderer::Adjust(int width, int height)

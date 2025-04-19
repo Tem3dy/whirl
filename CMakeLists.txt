@@ -77,6 +77,7 @@ add_library(${PROJECT_NAME} STATIC
     src/renderer/GuiRenderer.cpp
     src/renderer/QuadRenderer.cpp
     src/renderer/RoundedQuadRenderer.cpp
+    src/renderer/CircleRenderer.cpp
 )
 
 # Compile with C++ 20
