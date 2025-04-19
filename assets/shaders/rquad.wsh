@@ -1,41 +1,89 @@
 #shader vertex
 #version 450 core
 
-layout (location = 0) in vec2 a_position;
-layout (location = 1) in vec2 a_texCoord;
-layout (location = 2) in float a_radius;
-layout (location = 3) in uint a_color;
+layout(location = 0) in vec2  a_position;
+layout(location = 1) in vec2  a_size;
+layout(location = 2) in vec2  a_local;
+layout(location = 3) in float a_radius;
+layout(location = 4) in uint  a_color;
 
 uniform mat4 u_projection;
 
-out vec2 p_texCoord;
+out vec2  p_size;
+out vec2  p_local;
 out float p_radius;
-out vec4 p_color;
+out vec4  p_color;
 
 void main()
 {
     gl_Position = u_projection * vec4(a_position, 0.0, 1.0);
-    float r = float(((a_color >> 24) & 0xff)) / 255.0;
-    float g = float(((a_color >> 16) & 0xff)) / 255.0;
-    float b = float(((a_color >>  8) & 0xff)) / 255.0;
-    float a = float(((a_color >>  0) & 0xff)) / 255.0;
-    
-    p_texCoord = a_texCoord;
+    p_size = a_size;
+    p_local = a_local;
     p_radius = a_radius;
-    p_color = vec4(r, g, b, a);
+    p_color = vec4(
+        float((a_color >> 24) & 0xFF) / 255.0,
+        float((a_color >> 16) & 0xFF) / 255.0,
+        float((a_color >>  8) & 0xFF) / 255.0,
+        float((a_color >>  0) & 0xFF) / 255.0
+    );
 }
 
 #shader fragment
 #version 450 core
 
-in vec2 p_texCoord;
-in float p_radius;
-in vec4 p_color;
+in vec2  p_size;   // dimensions
+in vec2  p_local;  // local coords
+in float p_radius; // radius in pixels
+in vec4  p_color;  // color
 
-out vec4 o_color;
+out vec4 color;
+
+vec4 calc_bounds(vec2 arc_center)
+{
+    float dist = length(arc_center - p_local) - p_radius;
+    float factor = 0.75f;
+    float smooth_dist = smoothstep(-factor, factor, -dist);
+    return p_color * smooth_dist;
+}
 
 void main()
 {
-    // Implement rounded corners
-    o_color = p_color;
+    if (p_local.x < p_radius)
+    {
+        if (p_local.y < p_radius)
+        {
+            vec2 arc_center = vec2(p_radius);
+            color = calc_bounds(arc_center);
+        }
+        else if (p_local.y > p_size.y - p_radius)
+        {
+            vec2 arc_center = vec2(p_radius, p_size.y - p_radius);
+            color = calc_bounds(arc_center);
+        }
+        else
+        {
+            color = p_color;
+        }
+    }
+    else if (p_local.x > p_size.x - p_radius)
+    {
+        if (p_local.y < p_radius)
+        {
+            vec2 arc_center = vec2(p_size.x - p_radius, p_radius);
+            color = calc_bounds(arc_center);
+        }
+        else if (p_local.y > p_size.y - p_radius)
+        {
+            vec2 arc_center = p_size - vec2(p_radius);
+            color = calc_bounds(arc_center);
+        }
+        else
+        {
+            color = p_color;
+        }
+    }
+    else 
+    {
+        color = p_color;
+    }
 }

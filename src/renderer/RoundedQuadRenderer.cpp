@@ -61,6 +61,12 @@ void RoundedQuadRenderer::Submit(const RoundedQuad& quad)
         WHIRL_WARN("Invalid quad radius: ({})", quad.radius);
     }
 
+    if (quad.w < (quad.radius * 2) || quad.h < (quad.radius * 2))
+    {
+        WHIRL_WARN("Radius is ({}) way too large for quad: ({}, {})", quad.radius, quad.w, quad.h);
+        return;
+    }
+
     m_quads.push_back(quad);
 }
 
