@@ -42,8 +42,7 @@ vec4 calc_bounds(vec2 arc_center)
 {
     float dist = length(arc_center - p_local) - p_radius;
     float factor = 1.0f;
-    float smooth_dist = smoothstep(-factor, factor, -dist);
-    return p_color * smooth_dist;
+    return p_color * smoothstep(-factor, factor, -dist);
 }
 
 void main()
