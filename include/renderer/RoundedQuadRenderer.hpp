@@ -16,7 +16,7 @@ struct RoundedQuadVertex
 {
     float x, y;
     float w, h;
-    float rx, ry;
+    float u, v;
     float radius;
     uint32_t color;
 };
