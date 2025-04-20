@@ -53,6 +53,8 @@ void QuadRenderer::Configure()
     for (int i = 0; i < m_quads.size(); i++)
     {
         const auto& quad = m_quads[i];
+
+        // TODO: Ditch this approach and use instancing to not duplicate data
         m_vertices.emplace_back(quad.x, quad.y, quad.color);
         m_vertices.emplace_back(quad.x, quad.y + quad.h, quad.color);
         m_vertices.emplace_back(quad.x + quad.w, quad.y + quad.h, quad.color);

@@ -64,6 +64,7 @@ void CircleRenderer::Configure()
         const float centerX = circle.radius;
         const float centerY = circle.radius;
 
+        // TODO: Ditch this approach and use instancing to not duplicate data
         m_vertices.emplace_back(
             circle.x - circle.radius, circle.y - circle.radius,
             centerX, centerY,
