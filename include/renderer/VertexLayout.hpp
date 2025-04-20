@@ -33,7 +33,7 @@ namespace VertexLayout
         return {attributes};
     }
 
-    inline uint32_t GetStride(const std::vector<VertexAttribute>& attributes)
+    inline uint32_t GetStride(const std::vector<VertexAttribute>& attributes) noexcept
     {
         int32_t stride = 0;
         for (const auto& attribute : attributes)
@@ -42,7 +42,7 @@ namespace VertexLayout
         return stride;
     }
 
-    inline uint32_t GetOffset(const std::vector<VertexAttribute>& attributes, int index)
+    inline uint32_t GetOffset(const std::vector<VertexAttribute>& attributes, int index) noexcept
     {
         if (index >= attributes.size())
         {
@@ -58,7 +58,7 @@ namespace VertexLayout
         return offset;
     }
 
-    inline uint32_t GetType(VertexFormat format)
+    inline uint32_t GetType(VertexFormat format) noexcept
     {
         switch (format)
         {
