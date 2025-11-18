@@ -210,7 +210,7 @@ impl Mat4 {
     /// - `aspect_ratio` -> the aspect ratio of the window
     /// - `near` -> the near plane (how close we are able to see before clipping)
     /// - `far` -> the far plane (how far we are able to see before clipping)
-    pub fn persp(fov: f32, aspect_ratio: f32, near: f32, far: f32) -> Self {
+    pub fn perspective(fov: f32, aspect_ratio: f32, near: f32, far: f32) -> Self {
         let half_height = (fov / 2.0).tan();
         Self {
             x_axis: Vec4::new(1.0 / (aspect_ratio * half_height), 0.0, 0.0, 0.0),
