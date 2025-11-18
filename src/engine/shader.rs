@@ -11,11 +11,15 @@ impl Shader {
     /// Creates a new shader from the following arguments:
     /// - `device` is the raw [`wgpu::Device`]
     /// - `path` is the path of the shader file to read
-    /// - `label` is a label which is assigned to the shader unit for debugging purposes
-    pub fn new(device: &wgpu::Device, path: &Path, label: &str) -> Result<Self, Box<dyn Error>> {
+    /// - `label` is an optional debugging label which is assigned to the shader unit
+    pub fn new(
+        device: &wgpu::Device,
+        path: &Path,
+        label: Option<&str>,
+    ) -> Result<Self, Box<dyn Error>> {
         let source = fs::read_to_string(path)?;
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
-            label: Some(label),
+            label,
             source: wgpu::ShaderSource::Wgsl(Cow::Owned(source)),
         });
         Ok(Self { raw: shader })

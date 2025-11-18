@@ -19,8 +19,8 @@ pub struct GroupLayout {
 /// A group is a collection of GPU resources that get used and consumed by shaders
 #[derive(Debug)]
 pub struct GroupDescriptor<'a> {
-    /// The debugging label of the group
-    pub label: &'static str,
+    /// The optional debugging label of the group
+    pub label: Option<&'a str>,
     /// The group layout specifying the layout of the group's entries
     pub layout: &'a GroupLayout,
     /// The group entries, can hold:
@@ -37,8 +37,8 @@ pub struct GroupDescriptor<'a> {
 ///
 #[derive(Debug)]
 pub struct GroupLayoutDescriptor<'a> {
-    /// The debugging label of the group layout
-    pub label: &'static str,
+    /// The optional debugging label of the group layout
+    pub label: Option<&'a str>,
     /// The group layout entries, the entries can be of type:
     /// - [`GroupLayoutResource::Buffer`]
     /// - [`GroupLayoutResource::Texture`]
@@ -187,7 +187,7 @@ impl<'a> GroupDescriptor<'a> {
             .collect();
         Group {
             raw: device.create_bind_group(&wgpu::BindGroupDescriptor {
-                label: Some(self.label),
+                label: self.label,
                 layout: self.layout.raw(),
                 entries: Box::leak(entries.into_boxed_slice()),
             }),
@@ -211,7 +211,7 @@ impl<'a> GroupLayoutDescriptor<'a> {
             .collect();
         GroupLayout {
             raw: device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-                label: Some(self.label),
+                label: self.label,
                 entries: Box::leak(entries.into_boxed_slice()),
             }),
         }
@@ -316,6 +316,8 @@ impl Stage {
 /// A builder utility for creating a [`Group`] in a more ergonomic way.
 #[derive(Debug)]
 pub struct GroupBuilder<'a> {
+    /// The optional debugging label of this group
+    label: Option<&'a str>,
     /// The current location of a resource
     cursor: u32,
     /// The list of resources
@@ -326,9 +328,17 @@ impl<'a> GroupBuilder<'a> {
     /// Creates a new [`GroupBuilder`].
     pub fn new() -> Self {
         Self {
+            label: None,
             cursor: 0,
             entries: Vec::with_capacity(4),
         }
+    }
+
+    /// Sets a label to this [`Group`].
+    /// - `label` -> the label
+    pub fn label(mut self, label: &'a str) -> Self {
+        self.label = Some(label);
+        self
     }
 
     /// Adds a [`Buffer`] resource.
@@ -362,18 +372,17 @@ impl<'a> GroupBuilder<'a> {
     }
 
     /// Builds a [`Group`] and consumes this [`GroupBuilder`].
-    /// - `label` -> the label of the group
     /// - `layout` -> the matching [`GroupLayout`]
     /// - `device` -> the device needed to create the [`Group`]
     ///
     /// If the entry list is empty, the application panics.
-    pub fn build(self, label: &'static str, layout: &GroupLayout, device: &wgpu::Device) -> Group {
+    pub fn build(self, layout: &GroupLayout, device: &wgpu::Device) -> Group {
         if self.entries.is_empty() {
             panic!("Couldn't create a Group, missing entries!");
         }
 
         GroupDescriptor {
-            label,
+            label: self.label,
             layout,
             entries: &self.entries,
         }
@@ -383,20 +392,30 @@ impl<'a> GroupBuilder<'a> {
 
 /// A builder utility for creating a [`GroupLayout`] in a more ergonomic way.
 #[derive(Debug)]
-pub struct GroupLayoutBuilder {
+pub struct GroupLayoutBuilder<'a> {
+    /// The optional debugging label of this group layout
+    label: Option<&'a str>,
     /// The current location of a layout resource
     cursor: u32,
     /// The list of layout resources
     entries: Vec<GroupLayoutEntry>,
 }
 
-impl GroupLayoutBuilder {
+impl<'a> GroupLayoutBuilder<'a> {
     /// Creates a new [`GroupLayoutBuilder`].
     pub fn new() -> Self {
         Self {
+            label: None,
             cursor: 0,
             entries: Vec::with_capacity(4),
         }
+    }
+
+    /// Sets a label to this [`GroupLayout`].
+    /// - `label` -> the label
+    pub fn label(mut self, label: &'a str) -> Self {
+        self.label = Some(label);
+        self
     }
 
     /// Adds a uniform buffer layout resource.
@@ -520,17 +539,16 @@ impl GroupLayoutBuilder {
     }
 
     /// Builds a [`GroupLayout`] and consumes this [`GroupLayoutBuilder`].
-    /// - `label` -> the label of the group layout
     /// - `device` -> the device needed to create the [`GroupLayout`]
     ///
     /// If the entry list is empty, the application panics.
-    pub fn build(self, label: &'static str, device: &wgpu::Device) -> GroupLayout {
+    pub fn build(self, device: &wgpu::Device) -> GroupLayout {
         if self.entries.is_empty() {
             panic!("Couldn't create a GroupLayout, missing entries!");
         }
 
         GroupLayoutDescriptor {
-            label,
+            label: self.label,
             entries: &self.entries,
         }
         .build(device)

@@ -15,9 +15,9 @@ pub struct Texture {
 
 /// Describes a texture
 #[derive(Debug)]
-pub struct TextureDescriptor {
-    /// The debugging label of this texture
-    pub label: String,
+pub struct TextureDescriptor<'a> {
+    /// The optional debugging label of this texture
+    pub label: Option<&'a str>,
     /// The dimension of this texture (1D, 2D, 3D)
     pub dimension: TextureDimension,
     /// The usage of this texture (image binding, storage binding, render attachment)
@@ -167,7 +167,7 @@ impl Texture {
     }
 }
 
-impl TextureDescriptor {
+impl<'a> TextureDescriptor<'a> {
     /// Attempts to build a [`Texture`] from this descriptor, returns a [`TextureError`] upon failure
     /// - `device` -> the [`wgpu::Device`] needed to create this GPU resource
     /// - `queue` -> the [`wgpu::Queue`] needed to write the image data to this texture on the GPU
@@ -226,7 +226,7 @@ impl TextureDescriptor {
 
     fn into_args(self, device: &wgpu::Device, size: TextureSize, format: TextureFormat) -> Texture {
         let raw_texture = device.create_texture(&wgpu::TextureDescriptor {
-            label: Some(&self.label),
+            label: self.label, 
             size: size.raw(),
             mip_level_count: 1,
             sample_count: 1,

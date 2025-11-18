@@ -104,8 +104,8 @@ pub struct PipelineLayout {
 /// A pipeline is a rendering configuration that specifies every stage of rendering
 #[derive(Debug)]
 pub struct PipelineDescriptor<'a> {
-    /// The debugging label of the pipeline
-    pub label: String,
+    /// The optional debugging label of the pipeline
+    pub label: Option<&'a str>,
     /// The pipeline shader
     pub shader: &'a Shader,
     /// The pipeline layout specifying pipeline resources
@@ -131,8 +131,8 @@ pub struct PipelineDescriptor<'a> {
 /// Describes a [`PipelineLayout`]
 #[derive(Debug)]
 pub struct PipelineLayoutDescriptor<'a> {
-    /// The debugging label of the pipeline layout
-    pub label: String,
+    /// The optional debugging label of the pipeline layout
+    pub label: Option<&'a str>,
     /// The list of group layouts
     pub layouts: &'a [&'a GroupLayout],
 }
@@ -166,7 +166,7 @@ impl<'a> PipelineDescriptor<'a> {
             };
         Pipeline {
             raw: device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
-                label: Some(&self.label),
+                label: self.label,
                 layout: Some(self.pipeline_layout.raw()),
                 vertex: wgpu::VertexState {
                     module: self.shader.raw(),
@@ -223,7 +223,7 @@ impl<'a> PipelineLayoutDescriptor<'a> {
         let layouts: Vec<_> = self.layouts.iter().map(|layout| layout.raw()).collect();
         PipelineLayout {
             raw: device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
-                label: Some(&self.label),
+                label: self.label,
                 bind_group_layouts: Box::leak(layouts.into_boxed_slice()),
                 push_constant_ranges: &[],
             }),
@@ -300,7 +300,7 @@ impl Depth {
 
 #[derive(Debug, Default)]
 pub struct PipelineBuilder<'a> {
-    name: Option<String>,
+    label: Option<&'a str>,
     shader: Option<&'a Shader>,
     layout: Option<&'a PipelineLayout>,
     draw: Option<Draw>,
@@ -318,8 +318,8 @@ impl<'a> PipelineBuilder<'a> {
         Default::default()
     }
 
-    pub fn name(mut self, name: &str) -> Self {
-        self.name = Some(name.to_string());
+    pub fn label(mut self, label: &'a str) -> Self {
+        self.label = Some(label);
         self
     }
 
@@ -375,7 +375,7 @@ impl<'a> PipelineBuilder<'a> {
 
     pub fn build(self, device: &wgpu::Device) -> Pipeline {
         PipelineDescriptor {
-            label: self.name.unwrap_or("Unnamed pipeline".to_string()),
+            label: self.label,
             shader: self.shader.expect("Missing shader in pipeline"),
             pipeline_layout: self.layout.expect("Missing layout in pipeline"),
             geometry_layout: self.geometry_layout,
@@ -393,7 +393,7 @@ impl<'a> PipelineBuilder<'a> {
 
 #[derive(Debug, Default)]
 pub struct PipelineLayoutBuilder<'a> {
-    name: Option<String>,
+    label: Option<&'a str>,
     layouts: Vec<&'a GroupLayout>,
 }
 
@@ -402,8 +402,8 @@ impl<'a> PipelineLayoutBuilder<'a> {
         Default::default()
     }
 
-    pub fn name(mut self, name: &str) -> Self {
-        self.name = Some(name.to_string());
+    pub fn label(mut self, label: &'a str) -> Self {
+        self.label = Some(label);
         self
     }
 
@@ -414,7 +414,7 @@ impl<'a> PipelineLayoutBuilder<'a> {
 
     pub fn build(self, device: &wgpu::Device) -> PipelineLayout {
         PipelineLayoutDescriptor {
-            label: self.name.unwrap_or("Unnamed pipeline layout".to_string()),
+            label: self.label,
             layouts: &self.layouts,
         }
         .build(device)

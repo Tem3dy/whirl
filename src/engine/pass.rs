@@ -9,8 +9,8 @@ pub struct RenderPass<'a> {
 
 /// Describes a render pass
 pub struct RenderPassDescriptor<'a> {
-    /// The debugging label of this render pass
-    pub label: &'static str,
+    /// The optional debugging label of this render pass
+    pub label: Option<&'a str>,
     /// The color attachment of this render pass
     pub color_attachment: Option<Color>,
     /// The depth/stencil attachment of this render pass
@@ -95,7 +95,7 @@ impl<'a> RenderPassDescriptor<'a> {
     ) -> RenderPass<'a> {
         RenderPass {
             raw: encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
-                label: Some(self.label),
+                label: self.label,
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment {
                     view: frame,
                     ops: wgpu::Operations {

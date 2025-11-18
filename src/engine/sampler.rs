@@ -7,9 +7,9 @@ pub struct Sampler {
 
 /// Describes a sampler
 #[derive(Debug)]
-pub struct SamplerDescriptor {
-    /// The debugging label of this sampler
-    pub label: &'static str,
+pub struct SamplerDescriptor<'a> {
+    /// The optional debugging label of this sampler
+    pub label: Option<&'a str>,
     /// The texture wrapping mode to use
     pub wrapping: TextureWrapping,
     /// The texture filtering more to use
@@ -54,14 +54,14 @@ impl Sampler {
     }
 }
 
-impl SamplerDescriptor {
+impl<'a> SamplerDescriptor<'a> {
     /// Builds a [`Sampler`]
     pub fn build(self, device: &wgpu::Device) -> Sampler {
         let wrapping = self.wrapping.raw();
         let filtering = self.filtering.raw();
         Sampler {
             raw: device.create_sampler(&wgpu::SamplerDescriptor {
-                label: Some(self.label),
+                label: self.label,
                 address_mode_u: wrapping,
                 address_mode_v: wrapping,
                 address_mode_w: wrapping,
