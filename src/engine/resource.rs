@@ -2,81 +2,78 @@ use crate::engine::{buffer::Buffer, sampler::Sampler, texture::Texture};
 
 /// Describes a wrapper around the raw [`wgpu::BindGroup`]
 #[derive(Debug)]
-pub struct Group {
+pub struct ResourceSet {
     /// The internal [`wgpu::BindGroup`]
     raw: wgpu::BindGroup,
 }
 
 /// Describes a wrapper around the raw [`wgpu::BindGroupLayout`]
 #[derive(Debug)]
-pub struct GroupLayout {
+pub struct ResourceSetLayout {
     /// The internal [`wgpu::BindGroupLayout`]
     raw: wgpu::BindGroupLayout,
 }
 
-/// Describes a group
+/// Describes a [`ResourceSet`].
 ///
-/// A group is a collection of GPU resources that get used and consumed by shaders
+/// A resource set is a collection of GPU resources that get used and consumed by shaders
 #[derive(Debug)]
-pub struct GroupDescriptor<'a> {
-    /// The optional debugging label of the group
+pub struct ResourceSetDescriptor<'a> {
+    /// The optional debugging label of the resource set
     pub label: Option<&'a str>,
-    /// The group layout specifying the layout of the group's entries
-    pub layout: &'a GroupLayout,
-    /// The group entries, can hold:
+    /// The [`ResourceSetLayout`] specifying the layout of the resource set's entries
+    pub layout: &'a ResourceSetLayout,
+    /// The resource set entries can be of type:
     /// - [`Buffer`]
     /// - [`Texture`]
     /// - [`Sampler`]
-    pub entries: &'a [GroupEntry<'a>],
+    pub entries: &'a [ResourceSetEntry<'a>],
 }
 
-/// Describes a group layout
+/// Describes a [`ResourceSetLayout`].
 ///
-/// A group layout is the layout of a collection of GPU resources
+/// A resource set layout is the layout of a collection of GPU resources
 /// that are intended to be used and consumed by shaders
-///
 #[derive(Debug)]
-pub struct GroupLayoutDescriptor<'a> {
-    /// The optional debugging label of the group layout
+pub struct ResourceSetLayoutDescriptor<'a> {
+    /// The optional debugging label of the resource set layout
     pub label: Option<&'a str>,
-    /// The group layout entries, the entries can be of type:
-    /// - [`GroupLayoutResource::Buffer`]
-    /// - [`GroupLayoutResource::Texture`]
-    /// - [`GroupLayoutResource::Sampler`]
-    pub entries: &'a [GroupLayoutEntry],
+    /// The resource set layout entries can be of type:
+    /// - [`LayoutResource::Buffer`]
+    /// - [`LayoutResource::Texture`]
+    /// - [`LayoutResource::Sampler`]
+    pub entries: &'a [ResourceSetLayoutEntry],
 }
 
-/// Describes a group entry
+/// Describes a [`ResourceSetEntry`].
 ///
-/// A group entry is a wrapper around the actual GPU resource
-/// with a binding which represents the index of the resource in the group
-///
+/// A resource set entry is a wrapper around the actual GPU resource
+/// with a binding which represents the index of the resource in the resource set
 #[derive(Debug)]
-pub struct GroupEntry<'a> {
-    /// The index of the resource in the group
+pub struct ResourceSetEntry<'a> {
+    /// The index of the resource in the resource set
     pub binding: u32,
     /// The actual resource (buffer, sampler, texture)
-    pub resource: GroupResource<'a>,
+    pub resource: Resource<'a>,
 }
 
-/// Describes a group layout entry
+/// Describes a [`ResourceSetLayoutEntry`].
 ///
-/// A group layout entry specifies the resource so the GPU
+/// A resource set layout entry specifies the resource so the GPU
 /// knows which resource to expect at which index
-///
 #[derive(Debug)]
-pub struct GroupLayoutEntry {
-    /// The index of the resource in the group
+pub struct ResourceSetLayoutEntry {
+    /// The index of the resource in the resource set layout
     pub binding: u32,
     /// The expected resource, specified by a configuration
-    pub resource: GroupLayoutResource,
+    pub resource: LayoutResource,
     /// The shader stage the resource should be visible in
-    pub stage: Stage,
+    pub access: ResourceAccess,
 }
 
 /// Describes a wrapper around the actual GPU resource (buffer, sampler, texture)
 #[derive(Debug)]
-pub enum GroupResource<'a> {
+pub enum Resource<'a> {
     /// A buffer resource, holding a reference to a [`Buffer`]
     Buffer(&'a Buffer),
     /// A sampler resource, holding a reference to a [`Sampler`]
@@ -85,9 +82,9 @@ pub enum GroupResource<'a> {
     Texture(&'a Texture),
 }
 
-/// Describes the expected resource type in a group
+/// Describes the expected resource type in a [`ResourceSet`]
 #[derive(Debug, Clone, Copy)]
-pub enum GroupLayoutResource {
+pub enum LayoutResource {
     /// The expected resource is a buffer specified by a [`BufferConfig`]
     Buffer(BufferConfig),
     /// The expected resource is a sampler specified by a [`SamplerConfig`]
@@ -147,36 +144,35 @@ pub enum TextureKind {
     Depth,
 }
 
-/// Describes the shader visibility of an entry
+/// Describes the the resource accessibility of a [`Resource`] in a [`ResourceSet`]
 #[derive(Debug, Clone, Copy)]
-pub enum Stage {
+pub enum ResourceAccess {
     /// Specifies that the resource is accessible only in the vertex shader
     Vertex,
     /// Specifies that the resource is accessible only in the fragment shader
     Fragment,
-    /// Specifies that the resource is accessible by both shaders
-    Both,
+    /// Specifies that the resource is accessible by either shader of the two
+    Either,
 }
 
-impl Group {
+impl ResourceSet {
     /// Returns a reference to the raw [`wgpu::BindGroup`]
     pub fn raw(&self) -> &wgpu::BindGroup {
         &self.raw
     }
 }
 
-impl GroupLayout {
+impl ResourceSetLayout {
     /// Returns a reference to the raw [`wgpu::BindGroupLayout`]
     pub fn raw(&self) -> &wgpu::BindGroupLayout {
         &self.raw
     }
 }
 
-impl<'a> GroupDescriptor<'a> {
-    /// Builds a [`Group`]
-    /// - `layout` -> the group layout that must match the group
+impl<'a> ResourceSetDescriptor<'a> {
+    /// Builds a [`ResourceSet`]
     /// - `device` -> the [`wgpu::Device`] required to create a raw [`wgpu::BindGroup`]
-    pub fn build(&self, device: &wgpu::Device) -> Group {
+    pub fn build(&self, device: &wgpu::Device) -> ResourceSet {
         let entries: Vec<_> = self
             .entries
             .iter()
@@ -185,7 +181,7 @@ impl<'a> GroupDescriptor<'a> {
                 resource: entry.resource.raw(),
             })
             .collect();
-        Group {
+        ResourceSet {
             raw: device.create_bind_group(&wgpu::BindGroupDescriptor {
                 label: self.label,
                 layout: self.layout.raw(),
@@ -195,21 +191,21 @@ impl<'a> GroupDescriptor<'a> {
     }
 }
 
-impl<'a> GroupLayoutDescriptor<'a> {
-    /// Builds a [`GroupLayout`]
+impl<'a> ResourceSetLayoutDescriptor<'a> {
+    /// Builds a [`ResourceSetLayout`]
     /// - `device` -> the [`wgpu::Device`] required to create a raw [`wgpu::BindGroupLayout`]
-    pub fn build(&self, device: &wgpu::Device) -> GroupLayout {
+    pub fn build(&self, device: &wgpu::Device) -> ResourceSetLayout {
         let entries: Vec<_> = self
             .entries
             .iter()
             .map(|entry| wgpu::BindGroupLayoutEntry {
                 binding: entry.binding,
-                visibility: entry.stage.raw(),
+                visibility: entry.access.raw(),
                 ty: entry.resource.raw(),
                 count: None,
             })
             .collect();
-        GroupLayout {
+        ResourceSetLayout {
             raw: device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
                 label: self.label,
                 entries: Box::leak(entries.into_boxed_slice()),
@@ -218,24 +214,24 @@ impl<'a> GroupLayoutDescriptor<'a> {
     }
 }
 
-impl<'a> GroupResource<'a> {
-    /// Maps the [`GroupResource`] to the internal [`wgpu::BindingResource`]
+impl<'a> Resource<'a> {
+    /// Maps the [`Resource`] to the internal [`wgpu::BindingResource`]
     pub fn raw(&self) -> wgpu::BindingResource<'a> {
         match self {
-            GroupResource::Buffer(buffer) => buffer.raw().as_entire_binding(),
-            GroupResource::Sampler(sampler) => wgpu::BindingResource::Sampler(sampler.raw()),
-            GroupResource::Texture(texture) => wgpu::BindingResource::TextureView(texture.view()),
+            Resource::Buffer(buffer) => buffer.raw().as_entire_binding(),
+            Resource::Sampler(sampler) => wgpu::BindingResource::Sampler(sampler.raw()),
+            Resource::Texture(texture) => wgpu::BindingResource::TextureView(texture.view()),
         }
     }
 }
 
-impl GroupLayoutResource {
-    /// Maps the [`GroupLayoutResource`] to the internal [`wgpu::BindingType`]
+impl LayoutResource {
+    /// Maps the [`LayoutResource`] to the internal [`wgpu::BindingType`]
     pub fn raw(&self) -> wgpu::BindingType {
         match self {
-            GroupLayoutResource::Buffer(config) => config.raw(),
-            GroupLayoutResource::Sampler(config) => config.raw(),
-            GroupLayoutResource::Texture(config) => config.raw(),
+            LayoutResource::Buffer(config) => config.raw(),
+            LayoutResource::Sampler(config) => config.raw(),
+            LayoutResource::Texture(config) => config.raw(),
         }
     }
 }
@@ -302,30 +298,30 @@ impl TextureConfig {
     }
 }
 
-impl Stage {
-    /// Maps the [`Stage`] to the internal [`wgpu::ShaderStages`]
+impl ResourceAccess {
+    /// Maps the [`ResourceAccess`] to the internal [`wgpu::ShaderStages`]
     pub fn raw(&self) -> wgpu::ShaderStages {
         match self {
-            Stage::Vertex => wgpu::ShaderStages::VERTEX,
-            Stage::Fragment => wgpu::ShaderStages::FRAGMENT,
-            Stage::Both => wgpu::ShaderStages::VERTEX_FRAGMENT,
+            ResourceAccess::Vertex => wgpu::ShaderStages::VERTEX,
+            ResourceAccess::Fragment => wgpu::ShaderStages::FRAGMENT,
+            ResourceAccess::Either => wgpu::ShaderStages::VERTEX_FRAGMENT,
         }
     }
 }
 
-/// A builder utility for creating a [`Group`] in a more ergonomic way.
+/// A builder utility for creating a [`ResourceSet`] in a more ergonomic way.
 #[derive(Debug)]
-pub struct GroupBuilder<'a> {
-    /// The optional debugging label of this group
+pub struct ResourceSetBuilder<'a> {
+    /// The optional debugging label of this resource set
     label: Option<&'a str>,
     /// The current location of a resource
     cursor: u32,
     /// The list of resources
-    entries: Vec<GroupEntry<'a>>,
+    entries: Vec<ResourceSetEntry<'a>>,
 }
 
-impl<'a> GroupBuilder<'a> {
-    /// Creates a new [`GroupBuilder`].
+impl<'a> ResourceSetBuilder<'a> {
+    /// Creates a new [`ResourceSetBuilder`].
     pub fn new() -> Self {
         Self {
             label: None,
@@ -334,7 +330,7 @@ impl<'a> GroupBuilder<'a> {
         }
     }
 
-    /// Sets a label to this [`Group`].
+    /// Sets a label to this [`ResourceSet`].
     /// - `label` -> the label
     pub fn label(mut self, label: &'a str) -> Self {
         self.label = Some(label);
@@ -343,9 +339,9 @@ impl<'a> GroupBuilder<'a> {
 
     /// Adds a [`Buffer`] resource.
     pub fn add_buffer(mut self, buffer: &'a Buffer) -> Self {
-        self.entries.push(GroupEntry {
+        self.entries.push(ResourceSetEntry {
             binding: self.cursor,
-            resource: GroupResource::Buffer(buffer),
+            resource: Resource::Buffer(buffer),
         });
         self.cursor += 1;
         self
@@ -353,9 +349,9 @@ impl<'a> GroupBuilder<'a> {
 
     /// Adds a [`Sampler`] resource.
     pub fn add_sampler(mut self, sampler: &'a Sampler) -> Self {
-        self.entries.push(GroupEntry {
+        self.entries.push(ResourceSetEntry {
             binding: self.cursor,
-            resource: GroupResource::Sampler(sampler),
+            resource: Resource::Sampler(sampler),
         });
         self.cursor += 1;
         self
@@ -363,25 +359,25 @@ impl<'a> GroupBuilder<'a> {
 
     /// Adds a [`Texture`] resource.
     pub fn add_texture(mut self, texture: &'a Texture) -> Self {
-        self.entries.push(GroupEntry {
+        self.entries.push(ResourceSetEntry {
             binding: self.cursor,
-            resource: GroupResource::Texture(texture),
+            resource: Resource::Texture(texture),
         });
         self.cursor += 1;
         self
     }
 
-    /// Builds a [`Group`] and consumes this [`GroupBuilder`].
-    /// - `layout` -> the matching [`GroupLayout`]
-    /// - `device` -> the device needed to create the [`Group`]
+    /// Builds a [`ResourceSet`] and consumes this [`ResourceSetBuilder`].
+    /// - `layout` -> the matching [`ResourceSetLayout`]
+    /// - `device` -> the device needed to create the [`ResourceSet`]
     ///
-    /// If the entry list is empty, the application panics.
-    pub fn build(self, layout: &GroupLayout, device: &wgpu::Device) -> Group {
+    /// If the entry list is empty, the caller thread panics.
+    pub fn build(self, layout: &ResourceSetLayout, device: &wgpu::Device) -> ResourceSet {
         if self.entries.is_empty() {
-            panic!("Couldn't create a Group, missing entries!");
+            panic!("Couldn't create a `ResourceSet`, missing entries!");
         }
 
-        GroupDescriptor {
+        ResourceSetDescriptor {
             label: self.label,
             layout,
             entries: &self.entries,
@@ -390,19 +386,19 @@ impl<'a> GroupBuilder<'a> {
     }
 }
 
-/// A builder utility for creating a [`GroupLayout`] in a more ergonomic way.
+/// A builder utility for creating a [`ResourceSetLayout`] in a more ergonomic way.
 #[derive(Debug)]
-pub struct GroupLayoutBuilder<'a> {
-    /// The optional debugging label of this group layout
+pub struct ResourceSetLayoutBuilder<'a> {
+    /// The optional debugging label of this resource set layout
     label: Option<&'a str>,
     /// The current location of a layout resource
     cursor: u32,
     /// The list of layout resources
-    entries: Vec<GroupLayoutEntry>,
+    entries: Vec<ResourceSetLayoutEntry>,
 }
 
-impl<'a> GroupLayoutBuilder<'a> {
-    /// Creates a new [`GroupLayoutBuilder`].
+impl<'a> ResourceSetLayoutBuilder<'a> {
+    /// Creates a new [`ResourceSetLayoutBuilder`].
     pub fn new() -> Self {
         Self {
             label: None,
@@ -411,7 +407,7 @@ impl<'a> GroupLayoutBuilder<'a> {
         }
     }
 
-    /// Sets a label to this [`GroupLayout`].
+    /// Sets a label to this [`ResourceSetLayout`].
     /// - `label` -> the label
     pub fn label(mut self, label: &'a str) -> Self {
         self.label = Some(label);
@@ -419,135 +415,135 @@ impl<'a> GroupLayoutBuilder<'a> {
     }
 
     /// Adds a uniform buffer layout resource.
-    /// - `stage` -> the [`Stage`] specifying the visibility of the resource
-    pub fn add_uniform_buffer(mut self, stage: Stage) -> Self {
-        self.entries.push(GroupLayoutEntry {
+    /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
+    pub fn add_uniform_buffer(mut self, access: ResourceAccess) -> Self {
+        self.entries.push(ResourceSetLayoutEntry {
             binding: self.cursor,
-            resource: GroupLayoutResource::Buffer(BufferConfig::Uniform),
-            stage,
+            resource: LayoutResource::Buffer(BufferConfig::Uniform),
+            access,
         });
         self.cursor += 1;
         self
     }
 
     /// Adds a storage buffer layout resource.
-    /// - `stage` -> the [`Stage`] specifying the visibility of the resource
-    pub fn add_storage_buffer(mut self, stage: Stage) -> Self {
-        self.entries.push(GroupLayoutEntry {
+    /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
+    pub fn add_storage_buffer(mut self, access: ResourceAccess) -> Self {
+        self.entries.push(ResourceSetLayoutEntry {
             binding: self.cursor,
-            resource: GroupLayoutResource::Buffer(BufferConfig::Storage),
-            stage,
+            resource: LayoutResource::Buffer(BufferConfig::Storage),
+            access,
         });
         self.cursor += 1;
         self
     }
 
     /// Adds a nearest sampler layout resource.
-    /// - `stage` -> the [`Stage`] specifying the visibility of the resource
-    pub fn add_nearest_sampler(mut self, stage: Stage) -> Self {
-        self.entries.push(GroupLayoutEntry {
+    /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
+    pub fn add_nearest_sampler(mut self, access: ResourceAccess) -> Self {
+        self.entries.push(ResourceSetLayoutEntry {
             binding: self.cursor,
-            resource: GroupLayoutResource::Sampler(SamplerConfig::Nearest),
-            stage,
+            resource: LayoutResource::Sampler(SamplerConfig::Nearest),
+            access,
         });
         self.cursor += 1;
         self
     }
 
     /// Adds a linear sampler layout resource.
-    /// - `stage` -> the [`Stage`] specifying the visibility of the resource
-    pub fn add_linear_sampler(mut self, stage: Stage) -> Self {
-        self.entries.push(GroupLayoutEntry {
+    /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
+    pub fn add_linear_sampler(mut self, access: ResourceAccess) -> Self {
+        self.entries.push(ResourceSetLayoutEntry {
             binding: self.cursor,
-            resource: GroupLayoutResource::Sampler(SamplerConfig::Linear),
-            stage,
+            resource: LayoutResource::Sampler(SamplerConfig::Linear),
+            access,
         });
         self.cursor += 1;
         self
     }
 
     /// Adds a compare sampler layout resource.
-    /// - `stage` -> the [`Stage`] specifying the visibility of the resource
-    pub fn add_compare_sampler(mut self, stage: Stage) -> Self {
-        self.entries.push(GroupLayoutEntry {
+    /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
+    pub fn add_compare_sampler(mut self, access: ResourceAccess) -> Self {
+        self.entries.push(ResourceSetLayoutEntry {
             binding: self.cursor,
-            resource: GroupLayoutResource::Sampler(SamplerConfig::Compare),
-            stage,
+            resource: LayoutResource::Sampler(SamplerConfig::Compare),
+            access,
         });
         self.cursor += 1;
         self
     }
 
     /// Adds a depth texture layout resource.
-    /// - `stage` -> the [`Stage`] specifying the visibility of the resource
-    pub fn add_depth_texture(mut self, stage: Stage) -> Self {
-        self.entries.push(GroupLayoutEntry {
+    /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
+    pub fn add_depth_texture(mut self, access: ResourceAccess) -> Self {
+        self.entries.push(ResourceSetLayoutEntry {
             binding: self.cursor,
-            resource: GroupLayoutResource::Texture(TextureConfig::D2(TextureKind::Depth)),
-            stage,
+            resource: LayoutResource::Texture(TextureConfig::D2(TextureKind::Depth)),
+            access,
         });
         self.cursor += 1;
         self
     }
 
     /// Adds a 1D texture layout resource.
-    /// - `stage` -> the [`Stage`] specifying the visibility of the resource
-    pub fn add_texture_1d(mut self, stage: Stage) -> Self {
-        self.entries.push(GroupLayoutEntry {
+    /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
+    pub fn add_texture_1d(mut self, access: ResourceAccess) -> Self {
+        self.entries.push(ResourceSetLayoutEntry {
             binding: self.cursor,
-            resource: GroupLayoutResource::Texture(TextureConfig::D1(TextureKind::Image)),
-            stage,
+            resource: LayoutResource::Texture(TextureConfig::D1(TextureKind::Image)),
+            access,
         });
         self.cursor += 1;
         self
     }
 
     /// Adds a 2D texture layout resource.
-    /// - `stage` -> the [`Stage`] specifying the visibility of the resource
-    pub fn add_texture_2d(mut self, stage: Stage) -> Self {
-        self.entries.push(GroupLayoutEntry {
+    /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
+    pub fn add_texture_2d(mut self, access: ResourceAccess) -> Self {
+        self.entries.push(ResourceSetLayoutEntry {
             binding: self.cursor,
-            resource: GroupLayoutResource::Texture(TextureConfig::D2(TextureKind::Image)),
-            stage,
+            resource: LayoutResource::Texture(TextureConfig::D2(TextureKind::Image)),
+            access,
         });
         self.cursor += 1;
         self
     }
 
     /// Adds a 3D texture layout resource.
-    /// - `stage` -> the [`Stage`] specifying the visibility of the resource
-    pub fn add_texture_3d(mut self, stage: Stage) -> Self {
-        self.entries.push(GroupLayoutEntry {
+    /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
+    pub fn add_texture_3d(mut self, access: ResourceAccess) -> Self {
+        self.entries.push(ResourceSetLayoutEntry {
             binding: self.cursor,
-            resource: GroupLayoutResource::Texture(TextureConfig::D3(TextureKind::Image)),
-            stage,
+            resource: LayoutResource::Texture(TextureConfig::D3(TextureKind::Image)),
+            access,
         });
         self.cursor += 1;
         self
     }
 
     /// Adds a cubemap texture layout resource.
-    /// - `stage` -> the [`Stage`] specifying the visibility of the resource
-    pub fn add_texture_cubemap(mut self, stage: Stage) -> Self {
-        self.entries.push(GroupLayoutEntry {
+    /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
+    pub fn add_texture_cubemap(mut self, access: ResourceAccess) -> Self {
+        self.entries.push(ResourceSetLayoutEntry {
             binding: self.cursor,
-            resource: GroupLayoutResource::Texture(TextureConfig::Cubemap(TextureKind::Image)),
-            stage,
+            resource: LayoutResource::Texture(TextureConfig::Cubemap(TextureKind::Image)),
+            access,
         });
         self.cursor += 1;
         self
     }
 
-    /// Builds a [`GroupLayout`] and consumes this [`GroupLayoutBuilder`].
-    /// - `device` -> the device needed to create the [`GroupLayout`]
+    /// Builds a [`ResourceSetLayout`] and consumes this [`ResourceSetLayoutBuilder`].
+    /// - `device` -> the device needed to create the [`ResourceSetLayout`]
     ///
-    /// If the entry list is empty, the application panics.
-    pub fn build(self, device: &wgpu::Device) -> GroupLayout {
+    /// If the entry list is empty, the caller thread panics.
+    pub fn build(self, device: &wgpu::Device) -> ResourceSetLayout {
         if self.entries.is_empty() {
-            panic!("Couldn't create a GroupLayout, missing entries!");
+            panic!("Couldn't create a `ResourceSetLayout`, missing entries!");
         }
 
-        GroupLayoutDescriptor {
+        ResourceSetLayoutDescriptor {
             label: self.label,
             entries: &self.entries,
         }

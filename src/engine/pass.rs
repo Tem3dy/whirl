@@ -1,5 +1,5 @@
 use crate::engine::{
-    buffer::Buffer, color::Color, group::Group, pipeline::Pipeline, texture::Texture,
+    buffer::Buffer, color::Color, resource::ResourceSet, pipeline::Pipeline, texture::Texture,
 };
 
 /// Describes a wrapper around the raw [`wgpu::RenderPass`]
@@ -42,11 +42,11 @@ impl<'a> RenderPass<'a> {
         self.raw.set_vertex_buffer(slot, buffer.as_slice());
     }
 
-    /// Sets a group to the render pass
-    /// - `slot` -> the slot to use for this group
-    /// - `group` -> the group of resources to set
-    pub fn use_group(&mut self, slot: u32, group: &Group) {
-        self.raw.set_bind_group(slot, group.raw(), &[]);
+    /// Sets a [`ResourceSet`] to the render pass
+    /// - `slot` -> the slot to use for this resource set
+    /// - `set` -> the resource set
+    pub fn use_resource_set(&mut self, slot: u32, set: &ResourceSet) {
+        self.raw.set_bind_group(slot, set.raw(), &[]);
     }
 
     /// Sets a pipeline to the render pass
