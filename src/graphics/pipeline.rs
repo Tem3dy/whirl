@@ -1,5 +1,5 @@
-use crate::engine::{
-    resource::ResourceSetLayout, layout::BufferLayout, shader::Shader, texture::TextureFormat,
+use crate::graphics::{
+    layout::BufferLayout, resource::ResourceSetLayout, shader::Shader, texture::TextureFormat,
 };
 
 /// Specifies which operation the GPU should perform when assembling geometry

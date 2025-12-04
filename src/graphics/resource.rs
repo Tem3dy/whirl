@@ -1,4 +1,4 @@
-use crate::engine::{buffer::Buffer, sampler::Sampler, texture::Texture};
+use crate::graphics::{buffer::Buffer, sampler::Sampler, texture::Texture};
 
 /// Describes a wrapper around the raw [`wgpu::BindGroup`]
 #[derive(Debug)]

@@ -1,4 +1,4 @@
-use crate::engine::{
+use crate::graphics::{
     buffer::Buffer, color::Color, pipeline::Pipeline, resource::ResourceSet, texture::Texture,
 };
 
