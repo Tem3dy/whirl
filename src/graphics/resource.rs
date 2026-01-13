@@ -1,4 +1,4 @@
-use crate::graphics::{buffer::Buffer, sampler::Sampler, texture::Texture};
+use crate::graphics::{buffer::AnyBufferHandle, sampler::Sampler, texture::Texture};
 
 /// Describes a wrapper around the raw [`wgpu::BindGroup`]
 #[derive(Debug)]
@@ -74,8 +74,8 @@ pub struct ResourceSetLayoutEntry {
 /// Describes a wrapper around the actual GPU resource (buffer, sampler, texture)
 #[derive(Debug)]
 pub enum Resource<'a> {
-    /// A buffer resource, holding a reference to a [`Buffer`]
-    Buffer(&'a Buffer),
+    /// A buffer resource, holding a reference to an [`AnyBufferHandle`] trait object.
+    Buffer(&'a dyn AnyBufferHandle),
     /// A sampler resource, holding a reference to a [`Sampler`]
     Sampler(&'a Sampler),
     /// A texture resource, holding a reference to a [`Texture`]
@@ -338,7 +338,7 @@ impl<'a> ResourceSetBuilder<'a> {
     }
 
     /// Adds a [`Buffer`] resource.
-    pub fn add_buffer(mut self, buffer: &'a Buffer) -> Self {
+    pub fn add_buffer(mut self, buffer: &'a dyn AnyBufferHandle) -> Self {
         self.entries.push(ResourceSetEntry {
             binding: self.cursor,
             resource: Resource::Buffer(buffer),

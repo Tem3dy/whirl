@@ -1,5 +1,6 @@
 use crate::graphics::{
-    buffer::Buffer, color::Color, pipeline::Pipeline, resource::ResourceSet, texture::Texture,
+    buffer::AnyBufferHandle, color::Color, pipeline::Pipeline, resource::ResourceSet,
+    texture::Texture,
 };
 
 /// Describes a wrapper around the raw [`wgpu::RenderPass`]
@@ -26,13 +27,13 @@ impl<'a> RenderPass<'a> {
     /// Sets a geometry buffer in a specific slot
     /// - `slot` -> the slot to use for this buffer
     /// - `buffer` -> the geometry buffer to set
-    pub fn use_geometry_buffer(&mut self, slot: u32, buffer: &Buffer) {
+    pub fn use_geometry_buffer(&mut self, slot: u32, buffer: &dyn AnyBufferHandle) {
         self.raw.set_vertex_buffer(slot, buffer.as_slice());
     }
 
     /// Sets an index buffer to the render pass
     /// - `buffer` -> the index buffer to set
-    pub fn use_index_buffer(&mut self, buffer: &Buffer) {
+    pub fn use_index_buffer(&mut self, buffer: &dyn AnyBufferHandle) {
         self.raw
             .set_index_buffer(buffer.as_slice(), wgpu::IndexFormat::Uint32);
     }
@@ -40,7 +41,7 @@ impl<'a> RenderPass<'a> {
     /// Sets an instance buffer in a specific slot
     /// - `slot` -> the slot to use for this buffer
     /// - `buffer` -> the instance buffer to set
-    pub fn use_instance_buffer(&mut self, slot: u32, buffer: &Buffer) {
+    pub fn use_instance_buffer(&mut self, slot: u32, buffer: &dyn AnyBufferHandle) {
         self.raw.set_vertex_buffer(slot, buffer.as_slice());
     }
 
