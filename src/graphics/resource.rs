@@ -24,7 +24,7 @@ pub struct ResourceSetDescriptor<'a> {
     /// The [`ResourceSetLayout`] specifying the layout of the resource set's entries
     pub layout: &'a ResourceSetLayout,
     /// The resource set entries can be of type:
-    /// - [`Buffer`]
+    /// - [`AnyBufferHandle`]
     /// - [`Texture`]
     /// - [`Sampler`]
     pub entries: &'a [ResourceSetEntry<'a>],
@@ -337,7 +337,7 @@ impl<'a> ResourceSetBuilder<'a> {
         self
     }
 
-    /// Adds a [`Buffer`] resource.
+    /// Adds a buffer resource.
     pub fn add_buffer(mut self, buffer: &'a dyn AnyBufferHandle) -> Self {
         self.entries.push(ResourceSetEntry {
             binding: self.cursor,
@@ -347,7 +347,7 @@ impl<'a> ResourceSetBuilder<'a> {
         self
     }
 
-    /// Adds a [`Sampler`] resource.
+    /// Adds a sampler resource.
     pub fn add_sampler(mut self, sampler: &'a Sampler) -> Self {
         self.entries.push(ResourceSetEntry {
             binding: self.cursor,
@@ -357,7 +357,7 @@ impl<'a> ResourceSetBuilder<'a> {
         self
     }
 
-    /// Adds a [`Texture`] resource.
+    /// Adds a texture resource.
     pub fn add_texture(mut self, texture: &'a Texture) -> Self {
         self.entries.push(ResourceSetEntry {
             binding: self.cursor,
