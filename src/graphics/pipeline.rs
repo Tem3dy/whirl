@@ -1,5 +1,5 @@
 use crate::graphics::{
-    layout::BufferLayout, group::BindGroupLayout, shader::Shader, texture::TextureFormat,
+    group::BindGroupLayout, layout::BufferLayout, shader::Shader, texture::TextureFormat,
 };
 
 /// Specifies which operation the GPU should perform when assembling geometry
@@ -39,11 +39,15 @@ pub enum Winding {
 
 /// Specifies the primitive which the GPU should use for assembling geometry
 #[derive(Debug, Clone, Copy)]
-pub enum Shape {
-    /// The most standard option, the geometry is should be rendered as triangles
+pub enum Primitive {
+    /// Useful for debugging and visualizing points in space,
+    /// the geometry primitive is a single point.
+    PointList,
+    /// Useful for debugging and visualizing lines, debug boxes,
+    /// the geometry primitive is a line.
+    LineList,
+    /// The most standard option, the geometry primitive is a triangle.
     TriangleList,
-    /// The lesser used option, the geometry should be rendered as triangle strips
-    TriangleStrip,
 }
 
 /// Specifies the blending mode for the GPU during the rasterization stage
@@ -120,8 +124,8 @@ pub struct PipelineDescriptor<'a> {
     pub cull: Cull,
     /// The winding order geometry
     pub winding: Winding,
-    /// The shape mode of geometry
-    pub shape: Shape,
+    /// The geometry primitive
+    pub primitive: Primitive,
     /// The blending mode of fragments
     pub blend: Blend,
     /// The depth function to enable depth testing
@@ -185,11 +189,11 @@ impl<'a> PipelineDescriptor<'a> {
                     })],
                 }),
                 primitive: wgpu::PrimitiveState {
-                    topology: self.shape.raw(),
+                    topology: self.primitive.raw(),
                     front_face: self.winding.raw(),
                     cull_mode: self.cull.raw(),
                     polygon_mode: self.draw.raw(),
-                    strip_index_format: if let Shape::TriangleStrip = self.shape {
+                    strip_index_format: if self.primitive.raw().is_strip() {
                         Some(wgpu::IndexFormat::Uint32)
                     } else {
                         None
@@ -263,12 +267,13 @@ impl Winding {
     }
 }
 
-impl Shape {
-    /// Maps the [`Shape`] to the internal [`wgpu::PrimitiveTopology`]
+impl Primitive {
+    /// Maps the [`Primitive`] to the internal [`wgpu::PrimitiveTopology`]
     fn raw(self) -> wgpu::PrimitiveTopology {
         match self {
-            Shape::TriangleList => wgpu::PrimitiveTopology::TriangleList,
-            Shape::TriangleStrip => wgpu::PrimitiveTopology::TriangleStrip,
+            Primitive::PointList => wgpu::PrimitiveTopology::PointList,
+            Primitive::LineList => wgpu::PrimitiveTopology::LineList,
+            Primitive::TriangleList => wgpu::PrimitiveTopology::TriangleList,
         }
     }
 }
@@ -308,7 +313,7 @@ pub struct PipelineBuilder<'a> {
     depth: Option<Depth>,
     blend: Option<Blend>,
     winding: Option<Winding>,
-    shape: Option<Shape>,
+    primitive: Option<Primitive>,
     geometry_layout: Option<BufferLayout>,
     instance_layout: Option<BufferLayout>,
 }
@@ -358,8 +363,8 @@ impl<'a> PipelineBuilder<'a> {
         self
     }
 
-    pub fn shape(mut self, shape: Shape) -> Self {
-        self.shape = Some(shape);
+    pub fn primitive(mut self, primitive: Primitive) -> Self {
+        self.primitive = Some(primitive);
         self
     }
 
@@ -385,7 +390,7 @@ impl<'a> PipelineBuilder<'a> {
             blend: self.blend.expect("Missing blend mode in pipeline"),
             depth: self.depth,
             winding: self.winding.unwrap_or(Winding::Clockwise),
-            shape: self.shape.unwrap_or(Shape::TriangleList),
+            primitive: self.primitive.unwrap_or(Primitive::TriangleList),
         }
         .build(device)
     }
