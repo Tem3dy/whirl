@@ -45,10 +45,18 @@ impl<'a> RenderPass<'a> {
     }
 
     /// Sets a [`BindGroup`] to the render pass
-    /// - `slot` -> the slot to use for this bind group
     /// - `set` -> the bind group
-    pub fn use_bind_group(&mut self, slot: u32, bind_group: &BindGroup) {
-        self.raw.set_bind_group(slot, bind_group.raw(), &[]);
+    pub fn use_bind_group(&mut self, bind_group: &BindGroup) {
+        self.use_bind_groups(&[bind_group]);
+    }
+
+    /// Sets multiple [`BindGroup`] instances to the render pass
+    pub fn use_bind_groups(&mut self, bind_groups: &[&BindGroup]) {
+        for (slot, bind_group) in bind_groups.iter().enumerate() {
+            // Unwrap is safe here
+            self.raw
+                .set_bind_group(slot.try_into().unwrap(), bind_group.raw(), &[]);
+        }
     }
 
     /// Sets a pipeline to the render pass
