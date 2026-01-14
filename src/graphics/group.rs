@@ -2,68 +2,68 @@ use crate::graphics::{buffer::AnyBufferHandle, sampler::Sampler, texture::Textur
 
 /// Describes a wrapper around the raw [`wgpu::BindGroup`]
 #[derive(Debug)]
-pub struct ResourceSet {
+pub struct BindGroup {
     /// The internal [`wgpu::BindGroup`]
     raw: wgpu::BindGroup,
 }
 
 /// Describes a wrapper around the raw [`wgpu::BindGroupLayout`]
 #[derive(Debug)]
-pub struct ResourceSetLayout {
+pub struct BindGroupLayout {
     /// The internal [`wgpu::BindGroupLayout`]
     raw: wgpu::BindGroupLayout,
 }
 
-/// Describes a [`ResourceSet`].
+/// Describes a [`BindGroup`].
 ///
-/// A resource set is a collection of GPU resources that get used and consumed by shaders
+/// A bind group is a collection of GPU resources that get used and consumed by shaders
 #[derive(Debug)]
-pub struct ResourceSetDescriptor<'a> {
-    /// The optional debugging label of the resource set
+pub struct BindGroupDescriptor<'a> {
+    /// The optional debugging label of the bind group
     pub label: Option<&'a str>,
-    /// The [`ResourceSetLayout`] specifying the layout of the resource set's entries
-    pub layout: &'a ResourceSetLayout,
-    /// The resource set entries can be of type:
+    /// The [`BindGroupLayout`] specifying the layout of the bind group's entries.
+    pub layout: &'a BindGroupLayout,
+    /// The bind group entries can be of type:
     /// - [`AnyBufferHandle`]
     /// - [`Texture`]
     /// - [`Sampler`]
-    pub entries: &'a [ResourceSetEntry<'a>],
+    pub entries: &'a [BindGroupEntry<'a>],
 }
 
-/// Describes a [`ResourceSetLayout`].
+/// Describes a [`BindGroupLayoutDescriptor`].
 ///
-/// A resource set layout is the layout of a collection of GPU resources
+/// A bind group layout is the layout of a collection of GPU resources
 /// that are intended to be used and consumed by shaders
 #[derive(Debug)]
-pub struct ResourceSetLayoutDescriptor<'a> {
-    /// The optional debugging label of the resource set layout
+pub struct BindGroupLayoutDescriptor<'a> {
+    /// The optional debugging label of the bind group layout
     pub label: Option<&'a str>,
-    /// The resource set layout entries can be of type:
+    /// The bind group layout's entries can be of type:
     /// - [`LayoutResource::Buffer`]
     /// - [`LayoutResource::Texture`]
     /// - [`LayoutResource::Sampler`]
-    pub entries: &'a [ResourceSetLayoutEntry],
+    pub entries: &'a [BindGroupLayoutEntry],
 }
 
-/// Describes a [`ResourceSetEntry`].
+/// Describes a [`BindGroupEntry`].
 ///
-/// A resource set entry is a wrapper around the actual GPU resource
-/// with a binding which represents the index of the resource in the resource set
+/// A bind group entry is a wrapper around the actual GPU resource
+/// with a binding which represents the index of the resource in the bind group
 #[derive(Debug)]
-pub struct ResourceSetEntry<'a> {
-    /// The index of the resource in the resource set
+pub struct BindGroupEntry<'a> {
+    /// The index of the resource in the bind group
     pub binding: u32,
     /// The actual resource (buffer, sampler, texture)
     pub resource: Resource<'a>,
 }
 
-/// Describes a [`ResourceSetLayoutEntry`].
+/// Describes a [`BindGroupLayoutEntry`].
 ///
-/// A resource set layout entry specifies the resource so the GPU
+/// A bind group layout entry specifies the resource so the GPU
 /// knows which resource to expect at which index
 #[derive(Debug)]
-pub struct ResourceSetLayoutEntry {
-    /// The index of the resource in the resource set layout
+pub struct BindGroupLayoutEntry {
+    /// The index of the resource in the bind group layout
     pub binding: u32,
     /// The expected resource, specified by a configuration
     pub resource: LayoutResource,
@@ -82,7 +82,7 @@ pub enum Resource<'a> {
     Texture(&'a Texture),
 }
 
-/// Describes the expected resource type in a [`ResourceSet`]
+/// Describes the expected resource type in a [`BindGroupLayout`]
 #[derive(Debug, Clone, Copy)]
 pub enum LayoutResource {
     /// The expected resource is a buffer specified by a [`BufferConfig`]
@@ -144,7 +144,7 @@ pub enum TextureKind {
     Depth,
 }
 
-/// Describes the the resource accessibility of a [`Resource`] in a [`ResourceSet`]
+/// Describes the the resource accessibility of a [`Resource`] in a [`BindGroup`]
 #[derive(Debug, Clone, Copy)]
 pub enum ResourceAccess {
     /// Specifies that the resource is accessible only in the vertex shader
@@ -155,24 +155,24 @@ pub enum ResourceAccess {
     Either,
 }
 
-impl ResourceSet {
+impl BindGroup {
     /// Returns a reference to the raw [`wgpu::BindGroup`]
     pub fn raw(&self) -> &wgpu::BindGroup {
         &self.raw
     }
 }
 
-impl ResourceSetLayout {
+impl BindGroupLayout {
     /// Returns a reference to the raw [`wgpu::BindGroupLayout`]
     pub fn raw(&self) -> &wgpu::BindGroupLayout {
         &self.raw
     }
 }
 
-impl<'a> ResourceSetDescriptor<'a> {
-    /// Builds a [`ResourceSet`]
+impl<'a> BindGroupDescriptor<'a> {
+    /// Builds a [`BindGroup`]
     /// - `device` -> the [`wgpu::Device`] required to create a raw [`wgpu::BindGroup`]
-    pub fn build(&self, device: &wgpu::Device) -> ResourceSet {
+    pub fn build(&self, device: &wgpu::Device) -> BindGroup {
         let entries: Vec<_> = self
             .entries
             .iter()
@@ -181,7 +181,7 @@ impl<'a> ResourceSetDescriptor<'a> {
                 resource: entry.resource.raw(),
             })
             .collect();
-        ResourceSet {
+        BindGroup {
             raw: device.create_bind_group(&wgpu::BindGroupDescriptor {
                 label: self.label,
                 layout: self.layout.raw(),
@@ -191,10 +191,10 @@ impl<'a> ResourceSetDescriptor<'a> {
     }
 }
 
-impl<'a> ResourceSetLayoutDescriptor<'a> {
-    /// Builds a [`ResourceSetLayout`]
+impl<'a> BindGroupLayoutDescriptor<'a> {
+    /// Builds a [`BindGroupLayout`]
     /// - `device` -> the [`wgpu::Device`] required to create a raw [`wgpu::BindGroupLayout`]
-    pub fn build(&self, device: &wgpu::Device) -> ResourceSetLayout {
+    pub fn build(&self, device: &wgpu::Device) -> BindGroupLayout {
         let entries: Vec<_> = self
             .entries
             .iter()
@@ -205,7 +205,7 @@ impl<'a> ResourceSetLayoutDescriptor<'a> {
                 count: None,
             })
             .collect();
-        ResourceSetLayout {
+        BindGroupLayout {
             raw: device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
                 label: self.label,
                 entries: Box::leak(entries.into_boxed_slice()),
@@ -309,19 +309,19 @@ impl ResourceAccess {
     }
 }
 
-/// A builder utility for creating a [`ResourceSet`] in a more ergonomic way.
+/// A builder utility for creating a [`BindGroup`] in a more ergonomic way.
 #[derive(Debug)]
-pub struct ResourceSetBuilder<'a> {
-    /// The optional debugging label of this resource set
+pub struct BindGroupBuilder<'a> {
+    /// The optional debugging label of this bind group
     label: Option<&'a str>,
     /// The current location of a resource
     cursor: u32,
     /// The list of resources
-    entries: Vec<ResourceSetEntry<'a>>,
+    entries: Vec<BindGroupEntry<'a>>,
 }
 
-impl<'a> ResourceSetBuilder<'a> {
-    /// Creates a new [`ResourceSetBuilder`].
+impl<'a> BindGroupBuilder<'a> {
+    /// Creates a new [`BindGroupBuilder`].
     pub fn new() -> Self {
         Self {
             label: None,
@@ -330,7 +330,7 @@ impl<'a> ResourceSetBuilder<'a> {
         }
     }
 
-    /// Sets a label to this [`ResourceSet`].
+    /// Sets a label to this [`BindGroup`].
     /// - `label` -> the label
     pub fn label(mut self, label: &'a str) -> Self {
         self.label = Some(label);
@@ -339,7 +339,7 @@ impl<'a> ResourceSetBuilder<'a> {
 
     /// Adds a buffer resource.
     pub fn add_buffer(mut self, buffer: &'a dyn AnyBufferHandle) -> Self {
-        self.entries.push(ResourceSetEntry {
+        self.entries.push(BindGroupEntry {
             binding: self.cursor,
             resource: Resource::Buffer(buffer),
         });
@@ -349,7 +349,7 @@ impl<'a> ResourceSetBuilder<'a> {
 
     /// Adds a sampler resource.
     pub fn add_sampler(mut self, sampler: &'a Sampler) -> Self {
-        self.entries.push(ResourceSetEntry {
+        self.entries.push(BindGroupEntry {
             binding: self.cursor,
             resource: Resource::Sampler(sampler),
         });
@@ -359,7 +359,7 @@ impl<'a> ResourceSetBuilder<'a> {
 
     /// Adds a texture resource.
     pub fn add_texture(mut self, texture: &'a Texture) -> Self {
-        self.entries.push(ResourceSetEntry {
+        self.entries.push(BindGroupEntry {
             binding: self.cursor,
             resource: Resource::Texture(texture),
         });
@@ -367,17 +367,17 @@ impl<'a> ResourceSetBuilder<'a> {
         self
     }
 
-    /// Builds a [`ResourceSet`] and consumes this [`ResourceSetBuilder`].
-    /// - `layout` -> the matching [`ResourceSetLayout`]
-    /// - `device` -> the device needed to create the [`ResourceSet`]
+    /// Builds a [`BindGroup`] and consumes this [`BindGroupBuilder`].
+    /// - `layout` -> the matching [`BindGroupLayout`]
+    /// - `device` -> the device needed to create the [`BindGroup`]
     ///
     /// If the entry list is empty, the caller thread panics.
-    pub fn build(self, layout: &ResourceSetLayout, device: &wgpu::Device) -> ResourceSet {
+    pub fn build(self, layout: &BindGroupLayout, device: &wgpu::Device) -> BindGroup {
         if self.entries.is_empty() {
-            panic!("Couldn't create a `ResourceSet`, missing entries!");
+            panic!("Couldn't create a `BindGroup`, missing entries!");
         }
 
-        ResourceSetDescriptor {
+        BindGroupDescriptor {
             label: self.label,
             layout,
             entries: &self.entries,
@@ -386,19 +386,19 @@ impl<'a> ResourceSetBuilder<'a> {
     }
 }
 
-/// A builder utility for creating a [`ResourceSetLayout`] in a more ergonomic way.
+/// A builder utility for creating a [`BindGroupLayout`] in a more ergonomic way.
 #[derive(Debug)]
-pub struct ResourceSetLayoutBuilder<'a> {
-    /// The optional debugging label of this resource set layout
+pub struct BindGroupLayoutBuilder<'a> {
+    /// The optional debugging label of this bind group layout
     label: Option<&'a str>,
     /// The current location of a layout resource
     cursor: u32,
     /// The list of layout resources
-    entries: Vec<ResourceSetLayoutEntry>,
+    entries: Vec<BindGroupLayoutEntry>,
 }
 
-impl<'a> ResourceSetLayoutBuilder<'a> {
-    /// Creates a new [`ResourceSetLayoutBuilder`].
+impl<'a> BindGroupLayoutBuilder<'a> {
+    /// Creates a new [`BindGroupLayoutBuilder`].
     pub fn new() -> Self {
         Self {
             label: None,
@@ -407,7 +407,7 @@ impl<'a> ResourceSetLayoutBuilder<'a> {
         }
     }
 
-    /// Sets a label to this [`ResourceSetLayout`].
+    /// Sets a label to this [`BindGroupLayout`].
     /// - `label` -> the label
     pub fn label(mut self, label: &'a str) -> Self {
         self.label = Some(label);
@@ -417,7 +417,7 @@ impl<'a> ResourceSetLayoutBuilder<'a> {
     /// Adds a uniform buffer layout resource.
     /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
     pub fn add_uniform_buffer(mut self, access: ResourceAccess) -> Self {
-        self.entries.push(ResourceSetLayoutEntry {
+        self.entries.push(BindGroupLayoutEntry {
             binding: self.cursor,
             resource: LayoutResource::Buffer(BufferConfig::Uniform),
             access,
@@ -429,7 +429,7 @@ impl<'a> ResourceSetLayoutBuilder<'a> {
     /// Adds a storage buffer layout resource.
     /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
     pub fn add_storage_buffer(mut self, access: ResourceAccess) -> Self {
-        self.entries.push(ResourceSetLayoutEntry {
+        self.entries.push(BindGroupLayoutEntry {
             binding: self.cursor,
             resource: LayoutResource::Buffer(BufferConfig::Storage),
             access,
@@ -441,7 +441,7 @@ impl<'a> ResourceSetLayoutBuilder<'a> {
     /// Adds a nearest sampler layout resource.
     /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
     pub fn add_nearest_sampler(mut self, access: ResourceAccess) -> Self {
-        self.entries.push(ResourceSetLayoutEntry {
+        self.entries.push(BindGroupLayoutEntry {
             binding: self.cursor,
             resource: LayoutResource::Sampler(SamplerConfig::Nearest),
             access,
@@ -453,7 +453,7 @@ impl<'a> ResourceSetLayoutBuilder<'a> {
     /// Adds a linear sampler layout resource.
     /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
     pub fn add_linear_sampler(mut self, access: ResourceAccess) -> Self {
-        self.entries.push(ResourceSetLayoutEntry {
+        self.entries.push(BindGroupLayoutEntry {
             binding: self.cursor,
             resource: LayoutResource::Sampler(SamplerConfig::Linear),
             access,
@@ -465,7 +465,7 @@ impl<'a> ResourceSetLayoutBuilder<'a> {
     /// Adds a compare sampler layout resource.
     /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
     pub fn add_compare_sampler(mut self, access: ResourceAccess) -> Self {
-        self.entries.push(ResourceSetLayoutEntry {
+        self.entries.push(BindGroupLayoutEntry {
             binding: self.cursor,
             resource: LayoutResource::Sampler(SamplerConfig::Compare),
             access,
@@ -477,7 +477,7 @@ impl<'a> ResourceSetLayoutBuilder<'a> {
     /// Adds a depth texture layout resource.
     /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
     pub fn add_depth_texture(mut self, access: ResourceAccess) -> Self {
-        self.entries.push(ResourceSetLayoutEntry {
+        self.entries.push(BindGroupLayoutEntry {
             binding: self.cursor,
             resource: LayoutResource::Texture(TextureConfig::D2(TextureKind::Depth)),
             access,
@@ -489,7 +489,7 @@ impl<'a> ResourceSetLayoutBuilder<'a> {
     /// Adds a 1D texture layout resource.
     /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
     pub fn add_texture_1d(mut self, access: ResourceAccess) -> Self {
-        self.entries.push(ResourceSetLayoutEntry {
+        self.entries.push(BindGroupLayoutEntry {
             binding: self.cursor,
             resource: LayoutResource::Texture(TextureConfig::D1(TextureKind::Image)),
             access,
@@ -501,7 +501,7 @@ impl<'a> ResourceSetLayoutBuilder<'a> {
     /// Adds a 2D texture layout resource.
     /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
     pub fn add_texture_2d(mut self, access: ResourceAccess) -> Self {
-        self.entries.push(ResourceSetLayoutEntry {
+        self.entries.push(BindGroupLayoutEntry {
             binding: self.cursor,
             resource: LayoutResource::Texture(TextureConfig::D2(TextureKind::Image)),
             access,
@@ -513,7 +513,7 @@ impl<'a> ResourceSetLayoutBuilder<'a> {
     /// Adds a 3D texture layout resource.
     /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
     pub fn add_texture_3d(mut self, access: ResourceAccess) -> Self {
-        self.entries.push(ResourceSetLayoutEntry {
+        self.entries.push(BindGroupLayoutEntry {
             binding: self.cursor,
             resource: LayoutResource::Texture(TextureConfig::D3(TextureKind::Image)),
             access,
@@ -525,7 +525,7 @@ impl<'a> ResourceSetLayoutBuilder<'a> {
     /// Adds a cubemap texture layout resource.
     /// - `access` -> the [`ResourceAccess`] specifying the shader accessibility of the resource
     pub fn add_texture_cubemap(mut self, access: ResourceAccess) -> Self {
-        self.entries.push(ResourceSetLayoutEntry {
+        self.entries.push(BindGroupLayoutEntry {
             binding: self.cursor,
             resource: LayoutResource::Texture(TextureConfig::Cubemap(TextureKind::Image)),
             access,
@@ -534,16 +534,16 @@ impl<'a> ResourceSetLayoutBuilder<'a> {
         self
     }
 
-    /// Builds a [`ResourceSetLayout`] and consumes this [`ResourceSetLayoutBuilder`].
-    /// - `device` -> the device needed to create the [`ResourceSetLayout`]
+    /// Builds a [`BindGroupLayout`] and consumes this [`BindGroupLayoutBuilder`].
+    /// - `device` -> the device needed to create the [`BindGroupLayout`]
     ///
     /// If the entry list is empty, the caller thread panics.
-    pub fn build(self, device: &wgpu::Device) -> ResourceSetLayout {
+    pub fn build(self, device: &wgpu::Device) -> BindGroupLayout {
         if self.entries.is_empty() {
-            panic!("Couldn't create a `ResourceSetLayout`, missing entries!");
+            panic!("Couldn't create a `BindGroupLayout`, missing entries!");
         }
 
-        ResourceSetLayoutDescriptor {
+        BindGroupLayoutDescriptor {
             label: self.label,
             entries: &self.entries,
         }

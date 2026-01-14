@@ -1,5 +1,5 @@
 use crate::graphics::{
-    layout::BufferLayout, resource::ResourceSetLayout, shader::Shader, texture::TextureFormat,
+    layout::BufferLayout, group::BindGroupLayout, shader::Shader, texture::TextureFormat,
 };
 
 /// Specifies which operation the GPU should perform when assembling geometry
@@ -134,7 +134,7 @@ pub struct PipelineLayoutDescriptor<'a> {
     /// The optional debugging label of the pipeline layout
     pub label: Option<&'a str>,
     /// The list of resource set layouts
-    pub layouts: &'a [&'a ResourceSetLayout],
+    pub layouts: &'a [&'a BindGroupLayout],
 }
 
 impl Pipeline {
@@ -394,7 +394,7 @@ impl<'a> PipelineBuilder<'a> {
 #[derive(Debug, Default)]
 pub struct PipelineLayoutBuilder<'a> {
     label: Option<&'a str>,
-    layouts: Vec<&'a ResourceSetLayout>,
+    layouts: Vec<&'a BindGroupLayout>,
 }
 
 impl<'a> PipelineLayoutBuilder<'a> {
@@ -407,7 +407,7 @@ impl<'a> PipelineLayoutBuilder<'a> {
         self
     }
 
-    pub fn layout(mut self, layout: &'a ResourceSetLayout) -> Self {
+    pub fn layout(mut self, layout: &'a BindGroupLayout) -> Self {
         self.layouts.push(layout);
         self
     }
