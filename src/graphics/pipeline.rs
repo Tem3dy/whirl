@@ -60,34 +60,14 @@ pub enum Blend {
     Replace,
 }
 
-/// Specifies the depth testing function for the GPU during the depth testing stage
-///
-/// Depth testing refers to discarding or overwriting pixels based on their distance
-/// from the camera by checking against the depth buffer
-///
 #[derive(Debug, Clone, Copy)]
-pub enum Depth {
-    /// The GPU will let the fragment pass if its depth value is less
-    /// than the previous fragment's depth, therefore the new fragment is closer.
+pub enum CompareFunction {
     Less,
-    /// The GPU will let the fragment pass if its depth value is less or equal
-    /// than the previous fragment's depth, therefore the new fragment is either
-    /// the same distance away, or closer than the previous fragment.
     LessEqual,
-    /// The GPU will let the fragment pass if its depth value is equal
-    /// than the previous fragment's depth, therefore the new fragment is
-    /// the same distance away.
     Equal,
-    /// The GPU will let the fragment pass if its depth value is greater or equal
-    /// than the previous fragment's depth, therefore the new fragment is either
-    /// the same distance away, or farther than the previous fragment.
     GreaterEqual,
-    /// The GPU will let the fragment pass if its depth value is greater
-    /// than the previous fragment's depth, therefore the new fragment is farther.
     Greater,
-    /// The GPU will always let the fragment pass
     Always,
-    /// The GPU will never let the fragment pass
     Never,
 }
 
@@ -129,7 +109,7 @@ pub struct PipelineDescriptor<'a> {
     /// The blending mode of fragments
     pub blend: Blend,
     /// The depth function to enable depth testing
-    pub depth: Option<Depth>,
+    pub depth_function: Option<CompareFunction>,
 }
 
 /// Describes a [`PipelineLayout`]
@@ -206,7 +186,7 @@ impl<'a> PipelineDescriptor<'a> {
                     mask: !0,
                     alpha_to_coverage_enabled: false,
                 },
-                depth_stencil: self.depth.map(|mode| wgpu::DepthStencilState {
+                depth_stencil: self.depth_function.map(|mode| wgpu::DepthStencilState {
                     format: wgpu::TextureFormat::Depth24PlusStencil8,
                     depth_write_enabled: true,
                     depth_compare: mode.raw(),
@@ -288,17 +268,17 @@ impl Blend {
     }
 }
 
-impl Depth {
-    /// Maps the [`Depth`] to the internal [`wgpu::CompareFunction`]
+impl CompareFunction {
+    /// Maps the [`CompareFunction`] to the internal [`wgpu::CompareFunction`]
     fn raw(self) -> wgpu::CompareFunction {
         match self {
-            Depth::Less => wgpu::CompareFunction::Less,
-            Depth::LessEqual => wgpu::CompareFunction::LessEqual,
-            Depth::Equal => wgpu::CompareFunction::Equal,
-            Depth::GreaterEqual => wgpu::CompareFunction::GreaterEqual,
-            Depth::Greater => wgpu::CompareFunction::Greater,
-            Depth::Always => wgpu::CompareFunction::Always,
-            Depth::Never => wgpu::CompareFunction::Never,
+            CompareFunction::Less => wgpu::CompareFunction::Less,
+            CompareFunction::LessEqual => wgpu::CompareFunction::LessEqual,
+            CompareFunction::Equal => wgpu::CompareFunction::Equal,
+            CompareFunction::GreaterEqual => wgpu::CompareFunction::GreaterEqual,
+            CompareFunction::Greater => wgpu::CompareFunction::Greater,
+            CompareFunction::Always => wgpu::CompareFunction::Always,
+            CompareFunction::Never => wgpu::CompareFunction::Never,
         }
     }
 }
@@ -310,7 +290,7 @@ pub struct PipelineBuilder<'a> {
     layout: Option<&'a PipelineLayout>,
     draw: Option<Draw>,
     cull: Option<Cull>,
-    depth: Option<Depth>,
+    depth_function: Option<CompareFunction>,
     blend: Option<Blend>,
     winding: Option<Winding>,
     primitive: Option<Primitive>,
@@ -348,8 +328,8 @@ impl<'a> PipelineBuilder<'a> {
         self
     }
 
-    pub fn depth(mut self, depth: Depth) -> Self {
-        self.depth = Some(depth);
+    pub fn depth_function(mut self, function: CompareFunction) -> Self {
+        self.depth_function = Some(function);
         self
     }
 
@@ -388,7 +368,7 @@ impl<'a> PipelineBuilder<'a> {
             draw: self.draw.expect("Missing draw mode in pipeline"),
             cull: self.cull.expect("Missing cull mode in pipeline"),
             blend: self.blend.expect("Missing blend mode in pipeline"),
-            depth: self.depth,
+            depth_function: self.depth_function,
             winding: self.winding.unwrap_or(Winding::Clockwise),
             primitive: self.primitive.unwrap_or(Primitive::TriangleList),
         }
